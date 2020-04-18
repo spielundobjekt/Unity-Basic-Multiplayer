@@ -11,7 +11,7 @@ public class MoveScript3D : MonoBehaviour
     public float moveSpeed = 1.0f;
     public float lookSpeed = 3.0f;
 
-    public Vector3 currentMovement;
+    public Vector3 currentMovement;     //this variable contains the amount of units we have moved, no matter if we are a local Player or a networked player
     public PlayerData myPlayer;
     public Vector3 oldLocation;
     public Vector2 lookInput;           //here we store the info we get from the mouse, to look around
@@ -99,30 +99,33 @@ public class MoveScript3D : MonoBehaviour
     void MoveCharacter()
     {
       
-        //make sure that we never loose the ground beneath our feet!
-        // for that, let's store the current y-Value of our position before we move the character
-        float currentYvalue = myPlayer.transform.position.y;
-
+        
         //let's rotate our player depending on where we look:
         myPlayer.transform.eulerAngles = new Vector2(0, lookInput.y) * lookSpeed;
 
         //instead of moving our player in absolute values, we need to move it relative to where she is looking
         //Unity (thankfully) gives us a Vector pointing in the direction we would describe as "forward"
         // we can add a fraction of that vector to our current position to move forward
-        myPlayer.transform.position += transform.forward * Time.deltaTime * movementInput.z;
+        currentMovement = transform.forward * Time.deltaTime * movementInput.z;
 
         //Similarly, Unity gives us a vector that points 90 degrees sideways (to the "right"). 
         //we can add a fraction of this vector to our current position to move from side to side
-        myPlayer.transform.position += transform.right * Time.deltaTime * movementInput.x;
+        currentMovement += transform.right * Time.deltaTime * movementInput.x;
+
+        //make sure that we never loose the ground beneath our feet!
+        currentMovement.y = 0;
 
         //and now, after we did all of the movement, let's set the y-Value again to what it was before
-        myPlayer.transform.position = new Vector3(transform.position.x, currentYvalue, transform.position.z);
+        myPlayer.transform.position += currentMovement;
+
+        
     }
 
     void UpdatePlayerData()
     {
-        //in order to calculate where we are heading, it's good to store the info of where we think "forward"currently is...
-        myPlayer.movementDirection = transform.forward;
+        //in order to calculate if and how much we have moved, 
+        //we need to store our actual movement in space in the movementDirection variable in PlayerData
+        myPlayer.movementDirection = currentMovement.normalized;
     }
 }
      
