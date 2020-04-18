@@ -699,6 +699,7 @@ GameObject:
   - component: {fileID: 2387118274769063390}
   - component: {fileID: 4657091645619708561}
   - component: {fileID: 3853738290843428434}
+  - component: {fileID: 8259602450340284871}
   m_Layer: 0
   m_Name: Representation3D
   m_TagString: Untagged
@@ -808,3 +809,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eyeOffset: 0.25
+--- !u!114 &8259602450340284871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6838420959283519689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3101ca62fafc1324992f957a3c5186d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 1
+  lookSpeed: 3
+  currentMovement: {x: 0, y: 0, z: 0}
+  myPlayer: {fileID: 0}
+  oldLocation: {x: 0, y: 0, z: 0}
+  lookInput: {x: 0, y: 0}
+  movementInput: {x: 0, y: 0, z: 0}
