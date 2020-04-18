@@ -39,14 +39,15 @@ public class AnimationScript3DBillboards : MonoBehaviour
 	public Vector3 mov;
 
 	//animation states - the values in the animator conditions
-	const int STATE_IDLE = 0;
-	const int STATE_WALK_UP = 1;
-	const int STATE_WALK_DOWN = 2;
-	const int STATE_WALK_LEFT = 3;
-	const int STATE_WALK_RIGHT = 4;
-	const int STATE_BATTLE = 5;
-	const int STATE_SUPER_BATTLE = 6;
-
+	const int STATE_IDLE_TOWARDS = 0;
+	const int STATE_IDLE_LEFT = 1;
+	const int STATE_IDLE_RIGHT = 2;
+	const int STATE_IDLE_AWAY = 3;
+    const int STATE_WALK_AWAY = 4;
+	const int STATE_WALK_TOWARDS = 5;
+	const int STATE_WALK_LEFT = 6;
+	const int STATE_WALK_RIGHT = 7;
+	
 	public int myAnimState;								
 
 	public float animSpeed=10;
@@ -66,8 +67,12 @@ public class AnimationScript3DBillboards : MonoBehaviour
     float   originalScale;
 
     PlayerData myPlayer;
+    Camera myCamera;
 
-    
+
+    public float visibleDotProductForward;
+    public float visibleDotProductRight;
+
     /// <summary>
     /// Functions from here
 
@@ -84,6 +89,7 @@ public class AnimationScript3DBillboards : MonoBehaviour
 	void Start()
 	{
         myPlayer = GetComponentInParent<PlayerData>();
+        myCamera = Camera.main;
 
         originalScale = Mathf.Abs(transform.localScale.x);
         Debug.Log("Animation Script 3D Billboards at the ready!");
@@ -108,6 +114,20 @@ public class AnimationScript3DBillboards : MonoBehaviour
 
 
     }
+
+    void Update()
+    {
+
+        if (bReset)
+            Reset();
+
+
+        SetAnimationForCharacter();
+        animFrame += Time.deltaTime * 100.0f;
+        AnimateState();
+
+    }
+
 
     //tbd loading from disk
     public void loadFromDisk()
@@ -146,6 +166,11 @@ public class AnimationScript3DBillboards : MonoBehaviour
         */
     }
 
+
+    //--------------------------------------
+    // Load the specific Texture from a .png file in the Resources Folder
+    // At some point, we can point this to a location online to download more resources, or change them without changing the code
+    //--------------------------------------
     public void GenerateTextureFromFile(){
 		//live loading of sprites
 
@@ -179,6 +204,13 @@ public class AnimationScript3DBillboards : MonoBehaviour
         for (int i = 0; i < HowManyAnimationPicsperRow; i++)
             walkTowards[i] = new Vector2(i* 1.0f/(float)HowManyAnimationPicsperRow, 2.0f * 1.0f / (float)HowManyAnimationRows);
 
+        //We also need to have multiple Idle animations now - one for each position we could be facing
+        //These will be the center image in the animation sequence
+        for (int i = 0; i < HowManyAnimationPicsperRow; i++)
+        {
+            idleAnim[i] = new Vector2(1.0f * 1.0f / (float)HowManyAnimationPicsperRow, i * 1.0f / (float)HowManyAnimationRows);
+        }
+
 
         //we now need to make sure that we do not draw the whole texture, but only a part of it.
         //so we need to set our Texture Scale accordingly
@@ -192,58 +224,117 @@ public class AnimationScript3DBillboards : MonoBehaviour
 	}
 
 
+    //--------------------------------------
+    // Figure out which Image of the Animation Sequence to show
+    //--------------------------------------
+    public void SetAnimationForCharacter(){
 
-	void Update(){
+        //make sure our basic animation state is IDLE_TOWARDS - we will change our state if there is a need for that
+		myAnimState = STATE_IDLE_TOWARDS;
 
-		if (bReset)
-			Reset ();
+        //First, let's find out if our Player is actually moving, or just standing around.
+        bool bPlayerMoves = false;
 
-        
-        setAnimationForCharacter();
-        animFrame += Time.deltaTime * 100.0f;
-        animateState();
-        
-    }
+        //We do this by looking at the Square Magnitude of MoveDirection (Square, because it is always positive that way!) in PlayerData
+        if (myPlayer.movementDirection.sqrMagnitude > 0.5f)
+        {
+            bPlayerMoves = true;
+        }
+
+        //Second, let's find out which way this player is facing, relative to the main camera
+        //We do this by comparing the Facing of our Player and the Facing of the Camera.
+        //We will use Dot Product for this. It's Math! It's fun!
+
+        Vector3 playerFacing = myPlayer.transform.forward;
+        //make sure we ignore looking up or down
+        playerFacing.y = 0;
+        //and then make sure that our Vector is exactly 1 unit long - this is important for the Maths!
+        playerFacing.Normalize();
+
+        //do the same for the main camera
+        Vector3 cameraFacing = myCamera.transform.forward;
+        cameraFacing.y = 0;
+        cameraFacing.Normalize();
+
+        //and in order to determine if they are facing left or right from one another, we need to do the same for the right axis of the camera
+        Vector3 cameraRight = myCamera.transform.right;
+        cameraRight.y = 0;
+        cameraRight.Normalize();
 
 
-	
-	public void setAnimationForCharacter(){
+        //Compare the two vectors using the Dot Product: 
+        //(ignore the first part of the website, start reading from "Why cos()")
+        //https://www.mathsisfun.com/algebra/vectors-dot-product.html 
+        //
+        // A Dot Product works a bit like this. Imagine the Two Vectors in 3Dimensional Space as 2 Arrows.
+        //In your Mind, move the Arrows so that the starting points of the arrows are touching each other, but leave their rotations as they were.
+        //They should now stand at an angle to each other. 
+        //The dot product gives you the angle between these two vectors, 
+        //or the projection of one of them on the other.
+        float dotProductForward = Vector3.Dot(cameraFacing, playerFacing);
+        float dotProductRight = Vector3.Dot(cameraRight, playerFacing);
 
-        //make sure our animation state is IDLE - we will change our state if there is a need for that
-		myAnimState = STATE_IDLE;
+        //For Debugging Purposes:
+        //Show me the Dot Products!
+        visibleDotProductForward = dotProductForward;
+        visibleDotProductRight = dotProductRight;
 
-        //transfer our movement into a local variable
-        //we get the movement information from the variable PlayerData Script, 
-        //which we access thorugh our variable myPlayer
-        
-        Vector3 locDelta = myPlayer.movementDirection;
 
-        
-		//are we moving?
-		if (locDelta.magnitude>0.0f){
-			//are we moving more left-right-ish or more up-down-ish?
-			if (Math.Abs (locDelta.x) >= Math.Abs (locDelta.z)) {
-				if (locDelta.x > 0.0f) {
-					myAnimState = STATE_WALK_RIGHT;
-					myDirection = "right";
-				}
-				if (locDelta.x < 0.0) {
-					myAnimState = STATE_WALK_LEFT;
-					myDirection = "left";
-				}
-			} else {
-				if (locDelta.z < 0.0) {
-					myAnimState = STATE_WALK_DOWN;
-                    myDirection = "down";
-                }
-				if (locDelta.z > 0.0){
-					myAnimState = STATE_WALK_UP;
-                    myDirection = "up";
-                }
-			}
-		}
+        //Now we can look at the two Dot Products, and depending on how large it is, they are facing in different directions:
+        //If the first Dot Product comparing the two forward Vectors is less than 0, 
+        //then the two vectors face each other (the projection of one Vector on another is negative)
+        //If it is less than -0.5, we can safely assume that the Image we should show as an animation is "Towards"
+        if (dotProductForward < -0.5f)
+        {
+            if (bPlayerMoves)
+            {
+                myAnimState = STATE_WALK_TOWARDS;
+            }
+            else
+            {
+                myAnimState = STATE_IDLE_TOWARDS;
+            }
+        }
+        //Similarly, if our Dot Product of the two facing vectors is bigger than 0.5, the player is facing away from the camera
+        else if (dotProductForward > 0.5f)
+        {
+            if (bPlayerMoves)
+            {
+                myAnimState = STATE_WALK_AWAY;
+            }
+            else
+            {
+                myAnimState = STATE_IDLE_AWAY;
+            }
+        }
 
-        oldLocation = transform.position;
+        //Now, in between these two, we cannot know if the player is facing left or right, 
+        //because the projection of the dot product will be the same for both cases.
+        //that is why we did our second dot product, and that one can tell us if we are facing left or right.
+        else if (dotProductRight > 0.0f)
+        {
+            if (bPlayerMoves)
+            {
+                myAnimState = STATE_WALK_RIGHT;
+            }
+            else
+            {
+                myAnimState = STATE_IDLE_RIGHT;
+            }
+        }
+        else
+        {
+            if (bPlayerMoves)
+            {
+                myAnimState = STATE_WALK_LEFT;
+            }
+            else
+            {
+                myAnimState = STATE_IDLE_LEFT;
+            }
+        }
+
+        //and that's it!
 	}
 	
 
@@ -251,40 +342,65 @@ public class AnimationScript3DBillboards : MonoBehaviour
 	
        	
 	//--------------------------------------
-	// Change the players animation state
+	// Display the right part of our animation according to our animation state
+    // The decision which state we are in is taken in the function SetAnimationForCharacter()
 	//--------------------------------------
-	void animateState(){
+	void AnimateState(){
 
         //We use a local variable to set up our flipping, depending on the 
         float flipXY = 1.0f;
-        if (bFlippedAnim) flipXY = -1.0f;
+        //if (bFlippedAnim) flipXY = -1.0f;
 
         //make sure our texture is not flipped before we start changing anything
         mr.material.mainTextureScale = new Vector2(flipXY / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
 
+
         int frame = ((int)animFrame/(int)animSpeed)%3;
-		//int amountOfSloMo = 4;
 
-		switch (myAnimState) {
-			
-		case STATE_IDLE:
-			mr.material.mainTextureOffset=walkTowards[1];
-			break;
+        switch (myAnimState)
+        {
 
-		case STATE_WALK_UP:
+            case STATE_IDLE_TOWARDS:
+                mr.material.mainTextureOffset = idleAnim[2];
+                break;
+
+            case STATE_IDLE_AWAY:
+                mr.material.mainTextureOffset = idleAnim[1];
+                break;
+
+            case STATE_IDLE_LEFT:
+                mr.material.mainTextureOffset = idleAnim[0];
+                break;
+
+            case STATE_IDLE_RIGHT:
+                //we don't need to have extra information for standing facing left or right. 
+                //We can simply flip the texture by setting its Texture Scale in x to -flipXY
+                // This will basically change the sign of flipXY independently to what it is currently set.
+                // so -1 will become 1
+                // and 1 will become -1
+                // But Beware!our offset are ...
+                //...
+                //offset! 
+                //(haha)
+                //this means, we must add one offset step whenever we flip our texture
+                mr.material.mainTextureScale = new Vector2(-flipXY / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
+                mr.material.mainTextureOffset = idleAnim[0] + new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 0.0f);
+                break;
+
+            case STATE_WALK_AWAY:
                 mr.material.mainTextureOffset = walkAway[frame];
-			break;
-			
-		case STATE_WALK_DOWN:
+                break;
+
+            case STATE_WALK_TOWARDS:
                 mr.material.mainTextureOffset = walkTowards[frame];
-			break;
+                break;
 
             case STATE_WALK_LEFT:
 
                 mr.material.mainTextureOffset = walkLeftRight[frame];
                 break;
-			
-		case STATE_WALK_RIGHT:
+
+            case STATE_WALK_RIGHT:
 
                 //we don't need to have extra information for walking left and right. 
                 //We can simply flip the texture by setting its Texture Scale in x to -flipXY
@@ -298,10 +414,10 @@ public class AnimationScript3DBillboards : MonoBehaviour
                 //(haha)
                 //this means, we must add one offset step whenever we flip our texture
                 mr.material.mainTextureScale = new Vector2(-flipXY / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
-                mr.material.mainTextureOffset = walkLeftRight[frame] + new Vector2(1.0f / (float)HowManyAnimationPicsperRow,0.0f);
+                mr.material.mainTextureOffset = walkLeftRight[frame] + new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 0.0f);
                 break;
         }
-
+        
     }
 
 

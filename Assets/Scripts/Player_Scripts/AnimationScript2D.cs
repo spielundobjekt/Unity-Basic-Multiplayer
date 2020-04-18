@@ -196,7 +196,7 @@ public class AnimationScript2D : MonoBehaviour
         }
 
 		//are we moving?
-		if (locDelta.magnitude>0.0f){
+		if (locDelta.sqrMagnitude>0.0f){
 			//are we moving more left-right-ish or more up-down-ish?
 			if (Math.Abs (locDelta.x) >= Math.Abs (locDelta.z)) {
 				if (locDelta.x > 0.0f) {
