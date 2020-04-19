@@ -88,12 +88,13 @@ public class MoveScript3D : MonoBehaviour
     void ProcessDeviceInput()
     {
         //In 3D, our movement is always relative to where we look! 
+
         //So we have to calculate our looking direction, and then move accordingly!
         //(This following part of the script is adapted from here: https://www.reddit.com/r/Unity3D/comments/8k7w7v/unity_simple_mouselook/ )
         lookInput.y += Input.GetAxis("Mouse X");
         lookInput.x += -Input.GetAxis("Mouse Y");
 
-        //this next line makes sure that our rotation never goes beyond a certain value (so we cannot fully rotate our head all the way down)
+        //this next line makes sure that our rotation never goes beyond a certain value (so we cannot fully rotate our head all the way up or down)
         lookInput.x = Mathf.Clamp(lookInput.x, -15f, 15f);
 
         //and let's calculate all three rotation values for all our three possible rotation axes 
@@ -125,11 +126,11 @@ public class MoveScript3D : MonoBehaviour
 
 
         //first, let's do rotation left and right, using similar code to what we have with mouseLook
-        lookInput.y += lookSpeed * PlayerUIBridge.uiMov.x;
+        lookInput.y += lookSpeed * 0.1f * PlayerUIBridge.uiMov.x;
 
         Vector3 xyzAngleDegrees = new Vector3(0, 0, 0);
         //(we don't want to rotate around the z-Axis!)
-        xyzAngleDegrees = new Vector3(lookInput.x, lookInput.y, 0.0f) * lookSpeed / 10.0f;
+        xyzAngleDegrees = new Vector3(lookInput.x, lookInput.y, 0.0f) * lookSpeed;
 
         //finally, store our new look value in the PlayerData Script, so other scripts can access it as well!
         //we can store it as a Quaternion, which is Black Magic (tm), but basically describes a rotation in 3dimensional space in 4 values.
