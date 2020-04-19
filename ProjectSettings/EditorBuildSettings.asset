@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/2d_multiplayer.unity
     guid: 8c98c522962533c4c8f52b6299baf1ff
   - enabled: 1
-    path: Assets/Scenes/3d-Sprites-multiplayer.unity
+    path: Assets/Scenes/3d-Billboards-multiplayer.unity
     guid: b75849e10c01aa346b01790dc03fed59
   m_configObjects: {}
