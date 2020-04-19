@@ -3,25 +3,28 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-
+//The Move Script Handles Movement in 3D for Players
+//locally controlled through Mouse and Keyboard or the On-Screen UI 
+//it also keeps track of whether or not the player has moved in the last frame 
+//and updates the PlayerData Script accordingly
 
 public class MoveScript3D : MonoBehaviour
 {
-    
-    public float moveSpeed = 1.0f;
-    public float lookSpeed = 3.0f;
+    public PlayerData myPlayer;         //a variable that references our PlayerData Script
+                                        //we use this Script to store and retrieve information about the player
+                                        //from a whole bunch of scripts
+
+    public float moveSpeed = 1.0f;      //a factor for modifying the Movement Value we get from Input devices
+    public float lookSpeed = 3.0f;      //a factor for modifying the Rotational speed we get from Input devices
 
     public Vector3 currentMovement;     //this variable contains the amount of units we have moved, no matter if we are a local Player or a networked player
-    public PlayerData myPlayer;
-    public Vector3 oldLocation;
+    
+    public Vector3 oldLocation;         //we use this to figure out if we have moved during the last frame. 
+                                        //this is useful if we do not control this Player from our local inputs,
+                                        
     public Vector2 lookInput;           //here we store the info we get from the mouse, to look around
     public Vector3 movementInput;       //here, we store the information we get from the keyboard and/or gamepad
 
-
-
-    void Awake()
-    {
-    }
 
 
     // Use this for initialization
@@ -32,32 +35,57 @@ public class MoveScript3D : MonoBehaviour
     }
 
     // FixedUpdate is called once per frame
+    // it is more deterministic in its execution time and order than the regular "Update"
+    // which is why it is often used for movement and Physics related things
+    // here we describe in which order we process inputs and the move Objectss
     void FixedUpdate()
     {
+        //first, we make sure that we are not moving currently
         currentMovement = currentMovement * 0.0f;
 
+        //Only Process Movement from Input for the local Player, 
+        //otherwise all player Objects would move!
         if (myPlayer.isLocalPlayer)
         {
             ProcessMovement();
             
         }
+        //All other Player Objects still need to animate! 
+        //So they need to figure out if they have changed their position from the last frame to this frame 
         else
         {
             currentMovement = oldLocation - transform.position;
             oldLocation = transform.position;
         }
 
+        //finally, make sure all relevant information is put into the PlayerData Object 
+        //that all other scripts have access to (like the Animation Script).
         UpdatePlayerData();
     }
 
-    //player moves via on-screen-interface
-    public void UIMovement()
+    //Only Local Player Processes Movement Inputs via Keyboard, Mouse, or On-Screen UI
+    void ProcessMovement()
     {
-        currentMovement = moveSpeed * PlayerUIBridge.uiMov;        
+        
+
+        // Movement per input direction - Keyboard or Gamepad
+        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0 || Input.GetAxis("Mouse X") !=0 || Input.GetAxis("Mouse Y") != 0)
+        {
+            ProcessDeviceInput();
+        }
+        //Movement via On-Screen-Interface (Web and Cellphone, in case there was no movement from Input devices)
+        else
+        {
+            ProcessUIInput();
+        }
+
+        //now, before we move our character
+
+        MoveCharacter();             
     }
 
-    //player moves via keyboard or gamepad
-    void ProcessMovement()
+    //Here we process Input for Mouse, Keyboard and maybe later, Gamepad
+    void ProcessDeviceInput()
     {
         //In 3D, our movement is always relative to where we look! 
         //So we have to calculate our looking direction, and then move accordingly!
@@ -67,35 +95,56 @@ public class MoveScript3D : MonoBehaviour
 
         //this next line makes sure that our rotation never goes beyond a certain value (so we cannot fully rotate our head all the way down)
         lookInput.x = Mathf.Clamp(lookInput.x, -15f, 15f);
-                
+
         //and let's calculate all three rotation values for all our three possible rotation axes 
         //let's use a local Variable to store the information we get from the mouse
         Vector3 xyzAngleDegrees = new Vector3(0, 0, 0);
         //(we don't want to rotate around the z-Axis!)
-        xyzAngleDegrees = new Vector3(lookInput.x, lookInput.y,0.0f) * 3.0f;
+        xyzAngleDegrees = new Vector3(lookInput.x, lookInput.y, 0.0f) * lookSpeed;
 
         //finally, store our new look value in the PlayerData Script, so other scripts can access it as well!
         //we can store it as a Quaternion, which is Black Magic (tm), but basically describes a rotation in 3dimensional space in 4 values.
         //thankfully, unity gives us a possibility to transform from 3 values - degrees of rotation around different axis - to this magical data type
         myPlayer.lookRotation = Quaternion.Euler(xyzAngleDegrees);
 
-        // Movement per input direction - Keyboard or Gamepad
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-        {
-            //notice how we do not want to move in the y-Axis
-            movementInput = new Vector3( moveSpeed * Input.GetAxis("Horizontal"), 0.0f, moveSpeed * Input.GetAxis("Vertical"));
-        }
-        //Movement via On-Screen-Interface (Web and Cellphone)
-        else
-        {
-            UIMovement();
-        }
-
-        //now, before we move our character
-
-        MoveCharacter();             
+        //notice how we do not want to move in the y-Axis
+        movementInput = new Vector3(moveSpeed * Input.GetAxis("Horizontal"), 0.0f, moveSpeed * Input.GetAxis("Vertical"));
     }
 
+
+    //Here we Process Input from the On-Screen UI
+    public void ProcessUIInput()
+    {
+        //for the UI Movement, we will be doing some old-school like roation and movement
+
+        //we know that PlayerUIBridge.uiMov has the values we need for UI-Interface Movement
+        //now we need to interpret them like this:
+        //
+        //1. we want to rotate left and right when the left and right arrow is pressed
+        //2. we want to move "forward" when the up button is pressed and "backwards" when the down button is pressed
+
+
+        //first, let's do rotation left and right, using similar code to what we have with mouseLook
+        lookInput.y += lookSpeed * PlayerUIBridge.uiMov.x;
+
+        Vector3 xyzAngleDegrees = new Vector3(0, 0, 0);
+        //(we don't want to rotate around the z-Axis!)
+        xyzAngleDegrees = new Vector3(lookInput.x, lookInput.y, 0.0f) * lookSpeed / 10.0f;
+
+        //finally, store our new look value in the PlayerData Script, so other scripts can access it as well!
+        //we can store it as a Quaternion, which is Black Magic (tm), but basically describes a rotation in 3dimensional space in 4 values.
+        //thankfully, unity gives us a possibility to transform from 3 values - degrees of rotation around different axis - to this magical data type
+        myPlayer.lookRotation = Quaternion.Euler(xyzAngleDegrees);
+
+        // then, let's do forward and backward, also similar to what we do in the keyboard movement:
+        movementInput = new Vector3(0.0f, 0.0f, moveSpeed * PlayerUIBridge.uiMov.z);
+
+        //remember that the actual movement of the player will be handled after this function
+        //so we are pretty much done now.
+    }
+
+    //After we have figured out what the input wants us to do, 
+    //we can now start actually moving our player Object
     void MoveCharacter()
     {
       
@@ -121,6 +170,10 @@ public class MoveScript3D : MonoBehaviour
         
     }
 
+
+    //No matter if you are the Locally controlled Player Object, or any other Player Object
+    //it is important to update all movement related Data in the PlayerData Script,
+    //so all other scripts can access it and work with it
     void UpdatePlayerData()
     {
         //in order to calculate if and how much we have moved, 
