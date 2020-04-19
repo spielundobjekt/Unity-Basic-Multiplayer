@@ -30,8 +30,8 @@ public class MoveScript3D : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        myPlayer = GetComponentInParent<PlayerData>();
-        myPlayer.myCamera = Camera.main;
+        //connect to PlayerData
+        myPlayer = GetComponentInParent<PlayerData>();        
     }
 
     // FixedUpdate is called once per frame

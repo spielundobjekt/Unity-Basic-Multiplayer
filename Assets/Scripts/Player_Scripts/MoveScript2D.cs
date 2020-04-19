@@ -27,7 +27,6 @@ public class MoveScript2D : MonoBehaviour
     void Start()
     {
         myPlayer = GetComponentInParent<PlayerData>();
-        myPlayer.myCamera = Camera.main;
     }
 
     // FixedUpdate is called once per frame
@@ -95,8 +94,9 @@ public class MoveScript2D : MonoBehaviour
     //we can now start actually moving our player Object
     void MoveCharacter()
     {
-
-        transform.position = transform.position + Time.deltaTime * currentMovement;
+        //make sure that we don't move the transform of our own GameObject, 
+        //but the Transform of the GameObject containing the PlayerData Script
+        myPlayer.transform.position = myPlayer.transform.position + Time.deltaTime * currentMovement;
     }
 
     //No matter if you are the Locally controlled Player Object, or any other Player Object
