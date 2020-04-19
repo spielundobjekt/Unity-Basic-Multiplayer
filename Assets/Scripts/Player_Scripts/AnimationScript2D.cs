@@ -58,9 +58,7 @@ public class AnimationScript2D : MonoBehaviour
 
 	TextMesh    infoText;
 
-    float   originalScale;
-
-    PlayerData myPlayer;
+     PlayerData myPlayer;
 
     
     /// <summary>
@@ -68,11 +66,6 @@ public class AnimationScript2D : MonoBehaviour
 
     /// </summary>
 
-    void Reset(){
-	
-		bReset = false;
-		Start ();
-	}
 
 
 	// Use this for initialization
@@ -80,7 +73,6 @@ public class AnimationScript2D : MonoBehaviour
 	{
         myPlayer = GetComponentInParent<PlayerData>();
 
-        originalScale = Mathf.Abs(transform.localScale.x);
         Debug.Log("AnimationScript 2D at the ready!");
 		sr = this.GetComponent<SpriteRenderer>();
 		infoText = GetComponentInChildren<TextMesh> ();
@@ -93,42 +85,7 @@ public class AnimationScript2D : MonoBehaviour
         
 	}
 
-    //tbd loading from disk
-    public void loadFromDisk()
-    {
-        /*
-        //load image from outside of the resource-file
-        byte[] data = File.ReadAllBytes(Application.dataPath+"/character_"+GetComponent<MissionDataContainer>().clientID+".png");
-        
-        Texture2D charImage = new Texture2D(250, 250, TextureFormat.ARGB32, true);
-        charImage.LoadImage(data);
-        charImage.name ="mickey";
-
-        charImage.filterMode = FilterMode.Point;
-
-        //Texture2D charImage = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/M.png", typeof(Texture2D));
-        //charImage.filterMode = FilterMode.Point;
-
-        idleAnim = new Sprite[3];
-        wdAnim = new Sprite[3];
-        wuAnim = new Sprite[3];
-        wlAnim = new Sprite[3];
-
-        for (int i = 0; i < 3; i++)
-            wdAnim[i] = Sprite.Create(charImage, new Rect(i * 48, 144, 48, -48), new Vector2(0.5f, 0.5f));
-
-        for (int i = 0; i < 3; i++)
-            wuAnim[i] = Sprite.Create(charImage, new Rect(i * 48, 96, 48, -48), new Vector2(0.5f, 0.5f));
-
-        for (int i = 0; i < 3; i++)
-            wlAnim[i] = Sprite.Create(charImage, new Rect(i * 48, 48, 48, -48), new Vector2(0.5f, 0.5f));
-
-
-//        mySprite = Sprite.Create(charImage, new Rect(0, 0, 250, 250), new Vector2(0.5f,0.5f), 256);
-//        mySprite.name = "mickey";
-//        GetComponent<SpriteRenderer>().sprite = mySprite;
-        */
-    }
+    
 
     public void GenerateSprites(){
 		//live loading of sprites
@@ -136,8 +93,10 @@ public class AnimationScript2D : MonoBehaviour
 		Texture2D charImage = Resources.Load ("Characters/"+charName+"_character") as Texture2D;
 		charImage.filterMode = FilterMode.Point;
 
-        
-        idleAnim = new Sprite[3];
+        //since we will always be showing the same sprite, no matter how we are facing,
+        //our idle animation only needs one slot
+        idleAnim = new Sprite[1];
+
 		wdAnim = new Sprite[3];
 		wuAnim = new Sprite[3];
 		wlAnim = new Sprite[3];
@@ -159,19 +118,10 @@ public class AnimationScript2D : MonoBehaviour
 
 	void Update(){
 
-		if (bReset)
-			Reset ();
-
-        if (!bDead)
-        {
-            setAnimationForCharacter();
-            animFrame += Time.deltaTime * 100.0f;
-            animateState();
-        }
-        else
-        {
-            sr.sprite = death;
-        }
+        setAnimationForCharacter();
+        animFrame += Time.deltaTime * 100.0f;
+        animateState();
+        
     }
 
 
@@ -187,14 +137,7 @@ public class AnimationScript2D : MonoBehaviour
         
         Vector3 locDelta = myPlayer.movementDirection;
 
-        //Let's check if we are the player that belongs to this computer
-        //and if we are not (this is someone else's representation), flip their animation!
-        // I do not know why we need to do this, but apparently non-local players are flipped...
-        if (myPlayer.isLocalPlayer)
-        {
-            bFlippedAnim = true;
-        }
-
+       
 		//are we moving?
 		if (locDelta.sqrMagnitude>0.0f){
 			//are we moving more left-right-ish or more up-down-ish?
