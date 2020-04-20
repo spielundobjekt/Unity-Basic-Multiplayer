@@ -23,16 +23,21 @@ public class MoveScript2D : MonoBehaviour
                                         //this is useful if we do not control this Player from our local inputs,
 
 
-    // Use this for initialization
+    //--------------------------------------
+    // We use Start() to find the references for a lot of our Variables
+    // If we do it this way, we don't have to rely on connecting things in the editor that much.
+    //--------------------------------------
     void Start()
     {
         myPlayer = GetComponentInParent<PlayerData>();
     }
 
+    //--------------------------------------
     // FixedUpdate is called once per frame
     // it is more deterministic in its execution time and order than the regular "Update"
     // which is why it is often used for movement and Physics related things
     // here we describe in which order we process inputs and the move Objectss
+    //--------------------------------------
     void FixedUpdate()
     {
         //first, we make sure that we are not moving currently
@@ -58,9 +63,20 @@ public class MoveScript2D : MonoBehaviour
         UpdatePlayerData();
     }
 
-    
 
-    //player moves via keyboard or gamepad
+    //------------------------------------------------------------------------------------------------------------------------
+    // I personally like to first read Start() and Update() so that I can get an idea of what this Script is doing
+    // then i can delve deeper and figure out how individual functions work.
+    // For your own code, it is good practice to keep Start() and Update() as readable as possible! 
+    //
+    // If I have time (and I don't always do), I try to order the function in the same order that they are called in.
+    //------------------------------------------------------------------------------------------------------------------------
+
+
+    //--------------------------------------
+    //We find out which input type the player has used
+    //Only Local Player Processes Movement Inputs via Keyboard, Mouse, or On-Screen UI!
+    //--------------------------------------
     void ProcessMovement()
     {
         // Movement per input direction - Keyboard or Gamepad
@@ -68,30 +84,38 @@ public class MoveScript2D : MonoBehaviour
         {
             ProcessDeviceInput();
         }
-        //Movement via On-Screen-Interface (Web and Cellphone
+        //Movement via On-Screen-Interface (Web and Cellphone)
         else
         {
             ProcessUIInput();
         }
 
+        //after figuring out the inputs, let's move the character
+        //Attention! This also only gets called for the local player!
         MoveCharacter();             
     }
 
+    //--------------------------------------
     //Here we process Input for Keyboard and maybe Gamepad
+    //--------------------------------------
     void ProcessDeviceInput()
     {
         currentMovement = new Vector3( moveSpeed * Input.GetAxis("Horizontal"), 0.0f, moveSpeed * Input.GetAxis("Vertical"));
     }
 
 
-    //player moves via on-screen-interface
+    //--------------------------------------
+    //Here we process movement if player moves via on-screen-interface
+    //--------------------------------------
     public void ProcessUIInput()
     {
         currentMovement = moveSpeed * PlayerUIBridge.uiMov;
     }
 
+    //--------------------------------------
     //After we have figured out what the input wants us to do, 
     //we can now start actually moving our player Object
+    //--------------------------------------
     void MoveCharacter()
     {
         //make sure that we don't move the transform of our own GameObject, 
@@ -99,9 +123,11 @@ public class MoveScript2D : MonoBehaviour
         myPlayer.transform.position = myPlayer.transform.position + Time.deltaTime * currentMovement;
     }
 
+    //--------------------------------------
     //No matter if you are the Locally controlled Player Object, or any other Player Object
     //it is important to update all movement related Data in the PlayerData Script,
     //so all other scripts can access it and work with it
+    //--------------------------------------
     void UpdatePlayerData()
     {
         //in order to calculate if and how much we have moved, 

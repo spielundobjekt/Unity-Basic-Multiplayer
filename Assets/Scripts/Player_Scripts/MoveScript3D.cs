@@ -3,10 +3,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-//The Move Script Handles Movement in 3D for Players
-//locally controlled through Mouse and Keyboard or the On-Screen UI 
-//it also keeps track of whether or not the player has moved in the last frame 
-//and updates the PlayerData Script accordingly
+/// <summary>
+/// The Move Script Handles Movement in 3D for Players
+/// locally controlled through Mouse and Keyboard or the On-Screen UI 
+/// it also keeps track of whether or not the player has moved in the last frame 
+/// and updates the PlayerData Script accordingly
+/// </summary>
 
 public class MoveScript3D : MonoBehaviour
 {
@@ -27,17 +29,22 @@ public class MoveScript3D : MonoBehaviour
 
 
 
-    // Use this for initialization
+    //--------------------------------------
+    // We use Start() to find the references for a lot of our Variables
+    // If we do it this way, we don't have to rely on connecting things in the editor that much.
+    //--------------------------------------
     void Start()
     {
         //connect to PlayerData
         myPlayer = GetComponentInParent<PlayerData>();        
     }
 
+    //--------------------------------------
     // FixedUpdate is called once per frame
     // it is more deterministic in its execution time and order than the regular "Update"
     // which is why it is often used for movement and Physics related things
     // here we describe in which order we process inputs and the move Objectss
+    //--------------------------------------
     void FixedUpdate()
     {
         //first, we make sure that we are not moving currently
@@ -63,12 +70,28 @@ public class MoveScript3D : MonoBehaviour
         UpdatePlayerData();
     }
 
-    //Only Local Player Processes Movement Inputs via Keyboard, Mouse, or On-Screen UI
+
+
+    //------------------------------------------------------------------------------------------------------------------------
+    // I personally like to first read Start() and Update() so that I can get an idea of what this Script is doing
+    // then i can delve deeper and figure out how individual functions work.
+    // For your own code, it is good practice to keep Start() and Update() as readable as possible! 
+    //
+    // If I have time (and I don't always do), I try to order the function in the same order that they are called in.
+    //------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+    //--------------------------------------
+    //We find out which input type the player has used
+    //Only Local Player Processes Movement Inputs via Keyboard, Mouse, or On-Screen UI!
+    //--------------------------------------
     void ProcessMovement()
     {
         
 
-        // Movement per input direction - Keyboard or Gamepad
+        // Movement per input direction - relevant if input is Keyboard or Gamepad
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0 || Input.GetAxis("Mouse X") !=0 || Input.GetAxis("Mouse Y") != 0)
         {
             ProcessDeviceInput();
@@ -79,12 +102,14 @@ public class MoveScript3D : MonoBehaviour
             ProcessUIInput();
         }
 
-        //now, before we move our character
-
+        //after figuring out the inputs, let's move the character
+        //Attention! This also only gets called for the local player!
         MoveCharacter();             
     }
 
+    //--------------------------------------
     //Here we process Input for Mouse, Keyboard and maybe later, Gamepad
+    //--------------------------------------
     void ProcessDeviceInput()
     {
         //In 3D, our movement is always relative to where we look! 
@@ -113,7 +138,9 @@ public class MoveScript3D : MonoBehaviour
     }
 
 
+    //--------------------------------------
     //Here we Process Input from the On-Screen UI
+    //--------------------------------------
     public void ProcessUIInput()
     {
         //for the UI Movement, we will be doing some old-school like roation and movement
@@ -144,15 +171,12 @@ public class MoveScript3D : MonoBehaviour
         //so we are pretty much done now.
     }
 
+    //--------------------------------------
     //After we have figured out what the input wants us to do, 
     //we can now start actually moving our player Object
+    //--------------------------------------
     void MoveCharacter()
     {
-      
-        
-        //let's store the rotation of our Player in PlayerData
-        //myPlayer.transform.eulerAngles = new Vector2(0, lookInput.y) * lookSpeed;
-        //myPlayer.lookRotation.eulerAngles = new Vector2(0, lookInput.y) * lookSpeed;
         
         //instead of moving our player in absolute values, we need to move it relative to where she is looking
         //Unity (thankfully) gives us a Vector pointing in the direction we would describe as "forward"
@@ -169,13 +193,14 @@ public class MoveScript3D : MonoBehaviour
         //and now, after we did all of the movement, let's set the y-Value again to what it was before
         myPlayer.transform.position += currentMovement;
 
-        
     }
 
 
+    //--------------------------------------
     //No matter if you are the Locally controlled Player Object, or any other Player Object
     //it is important to update all movement related Data in the PlayerData Script,
     //so all other scripts can access it and work with it
+    //--------------------------------------
     void UpdatePlayerData()
     {
         //in order to calculate if and how much we have moved, 
