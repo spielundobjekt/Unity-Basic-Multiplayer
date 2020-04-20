@@ -10,9 +10,13 @@ public class PlayerCameraMovement3D : MonoBehaviour
 {
     PlayerData myPlayer;    //a connection to the Component that has important Data for the Player
     
-    public float eyeOffset = 0.25f;
+    public float eyeOffset = 0.25f; //we don't want the camera to be situated in the tummy of the Player, 
+                                    //so we need to offset it a bit in the y-Axis 
 
-    // Start is called before the first frame update
+    //--------------------------------------
+    // We use Start() to find the references for a lot of our Variables
+    // If we do it this way, we don't have to rely on connecting things in the editor that much.
+    //--------------------------------------
     void Start()
     {
         //first, make sure we can access all the variables of our PlayerData Script
@@ -21,7 +25,11 @@ public class PlayerCameraMovement3D : MonoBehaviour
         
     }
 
-    // Update is called once per frame
+    //--------------------------------------
+    // Update() gets called every frame
+    // so here you should find a readable list of things that we do every frame
+    // :-)
+    //--------------------------------------
     void Update()
     {
         //is this player controlled by my local computer?

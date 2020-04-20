@@ -87,6 +87,7 @@ MonoBehaviour:
   syncInterval: 0.1
   movementDirection: {x: 0, y: 0, z: 0}
   lookRotation: {x: 0, y: 0, z: 0, w: 0}
+  characterName: friedrich
 --- !u!114 &-1413149422819813009
 MonoBehaviour:
   m_ObjectHideFlags: 0

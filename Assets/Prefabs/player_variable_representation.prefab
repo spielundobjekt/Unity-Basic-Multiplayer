@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1456341919618539582}
   - component: {fileID: 951730228003114819}
   m_Layer: 0
-  m_Name: player_all
+  m_Name: player_variable_representation
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86,8 +86,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   movementDirection: {x: 0, y: 0, z: 0}
-  myCamera: {fileID: 0}
   lookRotation: {x: 0, y: 0, z: 0, w: 0}
+  characterName: friedrich
 --- !u!114 &-1413149422819813009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,10 +128,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f02c59c54593c842ac27f88abd6f8bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myPlayerData: {fileID: 0}
   representationPrefab2D: {fileID: 6211804595373404923, guid: 87ea84b8e1c45ab41ad77bcfdd9db9ec,
     type: 3}
   representationPrefab3DBillboards: {fileID: 5055879072752879276, guid: fce0f007922c8974c940a9b88edc561a,
     type: 3}
+  rep2D: {fileID: 0}
+  rep3DBillboard: {fileID: 0}
 --- !u!1 &370592778477098875
 GameObject:
   m_ObjectHideFlags: 0

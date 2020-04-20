@@ -14,6 +14,8 @@ public class PlayerData : Mirror.NetworkBehaviour
     public Vector3 movementDirection;       //here, we will store the Vector this player is moving in
     public Quaternion lookRotation;         //here we store the Rotation of the Player's gaze
 
+    public string characterName;            //this is the name of our character Sprite 
+
     Surroundings mySurroundings;            //helper Object to check for things around us, 
                                             //will be used later
 

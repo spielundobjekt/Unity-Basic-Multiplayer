@@ -5,179 +5,170 @@ using System.Reflection;
 using System;
 using System.Linq.Expressions;
 using System.IO;
-//#if UNITY_EDITOR 
-//using UnityEditor;
-//#endif
+
+/// <summary>
+/// In this class, we determine which small part of a larger image (also called SpriteSheet) we should draw, 
+/// so that others can see a representation of us in 3D
+/// </summary>
 
 public class AnimationScript3DBillboards : MonoBehaviour
 {
-	public Vector2 speed = new Vector2(2.2f, 2.2f);
 
-    public int HowManyAnimationPicsperRow = 3;
-    public int HowManyAnimationRows = 3;
-
+    //For the 3D Renderer, and to show you different ways in which you can do things,
     //instead of creating individual pictures, 
     //we just adjust our drawing coordinates 
     //of which part of our texture we want to draw 
     //these are only public so that we can look at the in the editor
 
-    public Vector2[] idleAnim;
-    public Vector2[] walkLeftRight;             
-    public Vector2[] walkTowards;
-    public Vector2[] walkAway;
-    
-    public string charName;
-	public bool bReset = false;
+    public Vector2[] idleAnim;              //idle is what we call the animation that should play if the Player doesn't move
+                                            //Video Game people have come up with this term.
 
-    public bool bFlippedAnim = false;   //we check this if the Texture we use for animating has a different facing left/right sequence
+    public Vector2[] walkLeftRight;         //since we use the same part of the image for both left and right movement,
+                                            //because we flip the Texture to get it to face the other way
+
+    public Vector2[] walkTowards;           //things to show when the Player is facing the camera
+
+    public Vector2[] walkAway;              //things to show when the Player is facing 180 degrees away from the camera
 
 
-	// 2 - Store the movement
-		
-	[HideInInspector]
-	public Vector3 pos;
-	public Vector3 mov;
+    public int HowManyAnimationPicsperRow = 3;  //this number relates to the amount of animation stills per row in our Sprite Sheet
+    public int HowManyAnimationRows = 3;        //this number relates to the amount of rows with animation stills in our Sprite Sheet
 
-	//animation states - the values in the animator conditions
-	const int STATE_IDLE_TOWARDS = 0;
-	const int STATE_IDLE_LEFT = 1;
+    //animation states
+    //States are a good way to keep track of information that is persistent for longer than a single frame (a single Update() call in Unity)
+    //but still changes over time.
+    //there is some info on states on the Wiki:http://hyperdramatik.net/mediawiki/index.php?title=Algorithms#Code_ist_Zustandsabfrage_und_Reaktion
+    //You have used states before, but mostly with booleans. 
+    //For more complex things (if the state is not just one or the other), 
+    //it is helpful to keep track of the state with a simple number, like we do here
+
+    public int myAnimState;             //in this variable, we want to store the current State of our Animation								
+
+    const int STATE_IDLE_TOWARDS = 0;   //these are all variables whose value will never change (which is why they have the word "const" in front)
+    const int STATE_IDLE_LEFT = 1;
 	const int STATE_IDLE_RIGHT = 2;
 	const int STATE_IDLE_AWAY = 3;
     const int STATE_WALK_AWAY = 4;
 	const int STATE_WALK_TOWARDS = 5;
 	const int STATE_WALK_LEFT = 6;
 	const int STATE_WALK_RIGHT = 7;
-	
-	public int myAnimState;								
 
-	public float animSpeed=10;
-	public string myDirection = "left";					
+    //we use this to make the code more readable!
+    //because it is sometimes easier to read a line of code like this:
+    //
+    //if (myAnimState==STATE_WALK_AWAY)
+    //
+    //than read a line like this:
+    //
+    //if (myAnimState==4)
+    //
+    //especially after a couple of days away from the computer
 
-    public bool bWalkInCircles = false;
+    //we use int variables for this, but there is a different way to do this, that many people use
+    //you can see the different way (involving Enums) in the GameData Script
 
-	MeshRenderer mr;
-	float animFrame;
-    Sprite mySprite;
+    public float animFrame;             //this variable stores the time that has passed between each call to Update()
+                                        //we use it when determining which part of our texture to draw, 
+                                        //so that we create a sort of animated flipbook
 
-
-    Vector3 	oldLocation;
-
-	TextMesh    infoText;
-
-    float   originalScale;
-
-    PlayerData myPlayer;
-    Camera myCamera;
+    public float animSpeed = 10;        //we use this variable to time the switching of our pictures 
 
 
+    MeshRenderer myMeshRenderer;        //we use this variable to Reference the MeshRenderer Component in our GameObject
+                                        //we need that later, to access the texture on the Mesh and change which part of the texture we show
+
+
+    TextMesh    infoText;               //a variable that references our TextMesh that can (for example) display our character's name
+    PlayerData  myPlayer;               //a variable that references the PlayerData Object, in which we store all sorts of Player related information
+
+    //these next two variables are used in the calculations for figuring out which way a Player is facing 
+    //corresponding to the camera
+    //more info can be found at SetAnimationForCharacter()
     public float visibleDotProductForward;
     public float visibleDotProductRight;
 
-    /// <summary>
-    /// Functions from here
-
-    /// </summary>
-
-    void Reset(){
-	
-		bReset = false;
-		Start ();
-	}
-
-
-	// Use this for initialization
-	void Start()
+    //--------------------------------------
+    // We use Start() to find the references for a lot of our Variables
+    // If we do it this way, we don't have to rely on connecting things in the editor that much.
+    //--------------------------------------
+    void Start()
 	{
+        //find our PlayerData Object in the Parent GameObject
         myPlayer = GetComponentInParent<PlayerData>();
-        myCamera = Camera.main;
 
-        originalScale = Mathf.Abs(transform.localScale.x);
+        //let the Console know that we exist!
         Debug.Log("Animation Script 3D Billboards at the ready!");
-		mr = this.GetComponent<MeshRenderer>();
+
+        //find the MeshRenderer Component in this script, because we want to do stuff to it later
+        myMeshRenderer = this.GetComponent<MeshRenderer>();
+
+        //find the TextMesh, so we can write things to it.
 		infoText = GetComponentInChildren<TextMesh> ();
-		//infoText.text=charName;
-		pos = transform.position;
-        GenerateTextureFromFile ();
 
-        //Let's check if we are the player that belongs to this computer
-        //and if we are not (this is someone else's representation), then flip their animation!
-        // I do not know why we need to do this, but apparently non-local players are flipped...
-        if (!myPlayer.isLocalPlayer)
-        {
-            bFlippedAnim = !bFlippedAnim;
-        }
-        //Note: if you want to assign a boolean to its opposite value, no matter how it is set now, then you can do:
-        // bValue = !bValue;
-        // it's like flipping a switch!
-
-        
-
+        //here we load the data from disk to be shown on our Mesh
+        //we want to do this in the very beginning, before Update is called
+		GenerateTextureFromFile ();
 
     }
 
+
+    //--------------------------------------
+    // Update() gets called every frame
+    // so here you should find a readable list of things that we do every frame
+    // :-)
+    //--------------------------------------
     void Update()
     {
-
-        if (bReset)
-            Reset();
-
-
+        //First, we need to figure out which Animation we should play
+        //because things might have changed from the last frame
         SetAnimationForCharacter();
-        animFrame += Time.deltaTime * 100.0f;
+
+        //once we have that figured out, we can call a function that does the actual "playing"
         AnimateState();
 
     }
 
 
-    //tbd loading from disk
-    public void loadFromDisk()
-    {
-        /*
-        //load image from outside of the resource-file
-        byte[] data = File.ReadAllBytes(Application.dataPath+"/character_"+GetComponent<MissionDataContainer>().clientID+".png");
-        
-        Texture2D charImage = new Texture2D(250, 250, TextureFormat.ARGB32, true);
-        charImage.LoadImage(data);
-        charImage.name ="mickey";
-
-        charImage.filterMode = FilterMode.Point;
-
-        //Texture2D charImage = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/M.png", typeof(Texture2D));
-        //charImage.filterMode = FilterMode.Point;
-
-        idleAnim = new Sprite[3];
-        wdAnim = new Sprite[3];
-        wuAnim = new Sprite[3];
-        wlAnim = new Sprite[3];
-
-        for (int i = 0; i < 3; i++)
-            wdAnim[i] = Sprite.Create(charImage, new Rect(i * 48, 144, 48, -48), new Vector2(0.5f, 0.5f));
-
-        for (int i = 0; i < 3; i++)
-            wuAnim[i] = Sprite.Create(charImage, new Rect(i * 48, 96, 48, -48), new Vector2(0.5f, 0.5f));
-
-        for (int i = 0; i < 3; i++)
-            wlAnim[i] = Sprite.Create(charImage, new Rect(i * 48, 48, 48, -48), new Vector2(0.5f, 0.5f));
 
 
-//        mySprite = Sprite.Create(charImage, new Rect(0, 0, 250, 250), new Vector2(0.5f,0.5f), 256);
-//        mySprite.name = "mickey";
-//        GetComponent<SpriteRenderer>().sprite = mySprite;
-        */
-    }
+    //------------------------------------------------------------------------------------------------------------------------
+    // I personally like to first read Start() and Update() so that I can get an idea of what this Script is doing
+    // then i can delve deeper and figure out how individual functions work
+    //
+    // If I have time (and I don't always do), I try to order the function in the same order that they are called in.
+    //------------------------------------------------------------------------------------------------------------------------
+
 
 
     //--------------------------------------
     // Load the specific Texture from a .png file in the Resources Folder
-    // At some point, we can point this to a location online to download more resources, or change them without changing the code
+    // At some point, we can point this to a location online to download more resources, 
+    // or change them without changing the code
     //--------------------------------------
     public void GenerateTextureFromFile(){
-		//live loading of sprites
 
-		Texture2D charImage = Resources.Load ("Characters/"+charName+"_character") as Texture2D;
-		charImage.filterMode = FilterMode.Point;
+        //Let's check if we have a name set up in the UI for our Player
+        //also: you should always compare two strings with the .Equals() function
+        // and not use ==
+        //That's what people tell me. It's safer with .Equals
+        if (!CharacterUISetupBridge.localCharacterName.Equals("none"))
+        {
+            myPlayer.characterName = CharacterUISetupBridge.localCharacterName;
+        }
 
-        
+        //load Data from the Resources Folder into a Texture (see http://hyperdramatik.net/mediawiki/index.php?title=GlossarCG#Textur )
+        Texture2D charImage = Resources.Load("Characters/" + myPlayer.characterName + "_character") as Texture2D;
+
+        //Let's check if loading actually worked
+        if (!charImage)
+        {
+            Debug.Log("Loading failed! Maybe Character does not exist?");
+        }
+
+        //this here makes sure that our images are drawn crisp and not mushy
+        charImage.filterMode = FilterMode.Point;
+
+        //set up our Arrays so we can put Data in them
         idleAnim = new Vector2[HowManyAnimationPicsperRow];
 		walkTowards = new Vector2[HowManyAnimationPicsperRow];
 		walkAway = new Vector2[HowManyAnimationPicsperRow];
@@ -215,17 +206,19 @@ public class AnimationScript3DBillboards : MonoBehaviour
         //we now need to make sure that we do not draw the whole texture, but only a part of it.
         //so we need to set our Texture Scale accordingly
         //we do not care about flipping right now, we can do this later.
-        mr.material.mainTextureScale = new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
+        myMeshRenderer.material.mainTextureScale = new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
 
         //finally, we will now set our Material in the Meshrenderer to use our Texture
 
-        mr.material.mainTexture = charImage;
+        myMeshRenderer.material.mainTexture = charImage;
 
 	}
 
 
     //--------------------------------------
     // Figure out which Image of the Animation Sequence to show
+    // This is using Vector Maths and is a bit hard, 
+    // if you haven't heard of Vector Maths before
     //--------------------------------------
     public void SetAnimationForCharacter(){
 
@@ -252,12 +245,12 @@ public class AnimationScript3DBillboards : MonoBehaviour
         playerFacing.Normalize();
 
         //do the same for the main camera
-        Vector3 cameraFacing = myCamera.transform.forward;
+        Vector3 cameraFacing = GameData.instance.mainCamera.transform.forward;
         cameraFacing.y = 0;
         cameraFacing.Normalize();
 
         //and in order to determine if they are facing left or right from one another, we need to do the same for the right axis of the camera
-        Vector3 cameraRight = myCamera.transform.right;
+        Vector3 cameraRight = GameData.instance.mainCamera.transform.right;
         cameraRight.y = 0;
         cameraRight.Normalize();
 
@@ -336,85 +329,81 @@ public class AnimationScript3DBillboards : MonoBehaviour
 
         //and that's it!
 	}
-	
 
-
-	
-       	
 	//--------------------------------------
-	// Display the right part of our animation according to our animation state
+	// Display the correct part of our Texture according to our animation state
     // The decision which state we are in is taken in the function SetAnimationForCharacter()
 	//--------------------------------------
 	void AnimateState(){
 
-        //We use a local variable to set up our flipping, depending on the 
-        float flipXY = 1.0f;
-        //if (bFlippedAnim) flipXY = -1.0f;
+        //count up how many frames have passed since we last called this function
+        animFrame += Time.deltaTime * 100.0f;
+
 
         //make sure our texture is not flipped before we start changing anything
-        mr.material.mainTextureScale = new Vector2(flipXY / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
+        //We have to do this, because in the previous frame, we might have flipped our texture!
+        //so we want to make sure we start from a non-flipped texture and then determine if we need to flip it, 
+        //depending on the situation in this specific frame
+        myMeshRenderer.material.mainTextureScale = new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
 
+        //here we calculate which of the three (or whatever HowManyAnimationPicsperRow stands for) pics of our animation we should show
+        // if you want to figure out how this works, take paper and pen and write down the outcome (the content of "frame") for different values for animFrame
+        int frame = ((int)animFrame/(int)animSpeed)%HowManyAnimationPicsperRow;
 
-        int frame = ((int)animFrame/(int)animSpeed)%3;
-
+        //if you have to go through a lot of different "if" statements, you can also use "switch" instead, 
+        //like in this case
+        //This is equivalent to if (myAnimState == STATE_IDLE_TOWARDS){ ... } and so on
         switch (myAnimState)
         {
 
             case STATE_IDLE_TOWARDS:
-                mr.material.mainTextureOffset = idleAnim[2];
+                myMeshRenderer.material.mainTextureOffset = idleAnim[2];
                 break;
 
             case STATE_IDLE_AWAY:
-                mr.material.mainTextureOffset = idleAnim[1];
+                myMeshRenderer.material.mainTextureOffset = idleAnim[1];
                 break;
 
             case STATE_IDLE_LEFT:
-                mr.material.mainTextureOffset = idleAnim[0];
+                myMeshRenderer.material.mainTextureOffset = idleAnim[0];
                 break;
 
             case STATE_IDLE_RIGHT:
                 //we don't need to have extra information for standing facing left or right. 
-                //We can simply flip the texture by setting its Texture Scale in x to -flipXY
-                // This will basically change the sign of flipXY independently to what it is currently set.
-                // so -1 will become 1
-                // and 1 will become -1
+                //We can simply flip the texture by setting its Texture Scale in x to -1
                 // But Beware!our offset are ...
                 //...
                 //offset! 
                 //(haha)
                 //this means, we must add one offset step whenever we flip our texture
-                mr.material.mainTextureScale = new Vector2(-flipXY / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
-                mr.material.mainTextureOffset = idleAnim[0] + new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 0.0f);
+                myMeshRenderer.material.mainTextureScale = new Vector2(-1.0f / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
+                myMeshRenderer.material.mainTextureOffset = idleAnim[0] + new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 0.0f);
                 break;
 
             case STATE_WALK_AWAY:
-                mr.material.mainTextureOffset = walkAway[frame];
+                myMeshRenderer.material.mainTextureOffset = walkAway[frame];
                 break;
 
             case STATE_WALK_TOWARDS:
-                mr.material.mainTextureOffset = walkTowards[frame];
+                myMeshRenderer.material.mainTextureOffset = walkTowards[frame];
                 break;
 
             case STATE_WALK_LEFT:
 
-                mr.material.mainTextureOffset = walkLeftRight[frame];
+                myMeshRenderer.material.mainTextureOffset = walkLeftRight[frame];
                 break;
 
             case STATE_WALK_RIGHT:
 
                 //we don't need to have extra information for walking left and right. 
-                //We can simply flip the texture by setting its Texture Scale in x to -flipXY
-                // This will basically change the sign of flipXY independently to what it is currently set.
-                // so -1 will become 1
-                // and 1 will become -1
-
+                //We can simply flip the texture by setting its Texture Scale in x to -1
                 //But Beware! our offset are ...
                 //...
                 //offset! 
                 //(haha)
                 //this means, we must add one offset step whenever we flip our texture
-                mr.material.mainTextureScale = new Vector2(-flipXY / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
-                mr.material.mainTextureOffset = walkLeftRight[frame] + new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 0.0f);
+                myMeshRenderer.material.mainTextureScale = new Vector2(-1.0f / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
+                myMeshRenderer.material.mainTextureOffset = walkLeftRight[frame] + new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 0.0f);
                 break;
         }
         

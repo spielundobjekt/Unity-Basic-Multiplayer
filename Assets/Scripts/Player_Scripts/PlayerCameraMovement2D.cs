@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// This Script moves the Camera for the Player when they walk around
+/// This Script moves the Camera for the Player
+/// The main Camera (as set in GameData.mainCamera) follows them somewhat lazyly
+/// 
+/// We presume this script is a Child of the GameObject that holds the PlayerData Script 
 /// </summary>
-
 public class PlayerCameraMovement2D : MonoBehaviour
 {
     PlayerData myPlayer;    //a connection to the Component that has important Data for the Player
@@ -14,7 +16,10 @@ public class PlayerCameraMovement2D : MonoBehaviour
 
     public Vector3 cameraMoveDirection; //the distance, but also the direction of where the camera should move
 
-    // Start is called before the first frame update
+    //--------------------------------------
+    // We use Start() to find the references for a lot of our Variables
+    // If we do it this way, we don't have to rely on connecting things in the editor that much.
+    //--------------------------------------
     void Start()
     {
         //first, make sure we can access all the variables of our PlayerData Script

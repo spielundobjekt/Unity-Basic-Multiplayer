@@ -7,12 +7,16 @@ using UnityEngine;
 
 public class RepresentationSwitcher : MonoBehaviour
 {
-    public GameObject room2D;
-    public GameObject room3DBillboards;
+    public GameObject room2D;               //a reference to a GameObject that contains all walls for the 2D room
+    public GameObject room3DBillboards;     //a reference to a GameObject that contains all walls for the 3D room
 
-    public GameObject camera2D;
-    public GameObject camera3DBillboards;
+    public GameObject camera2D;             //a reference to a GameObject that is set to be the Main Camera for the 2D Representation
+    public GameObject camera3DBillboards;   //a reference to a GameObject that is set to be the Main Camera for the 3D Representation
 
+    //--------------------------------------
+    // We use Start() to find the references for a lot of our Variables
+    // If we do it this way, we don't have to rely on connecting things in the editor that much.
+    //--------------------------------------
     private void Start()
     {
         //here we cast an enum Representation to an integer number 
@@ -21,6 +25,13 @@ public class RepresentationSwitcher : MonoBehaviour
         SwitchRepresentationModeAll((int)GameData.instance.clientRepresentation);
     }
 
+    //--------------------------------------
+    // We have to "turn off" a bunch of GameObjects 
+    // and then "turn on" a bunch of others, 
+    // depending on the representation we choose
+    //
+    // This is a function that can get called by a UI BUtton
+    //--------------------------------------
 
     public void SwitchRepresentationModeAll(int newRepresentation)
     {
