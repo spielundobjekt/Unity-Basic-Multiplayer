@@ -150,9 +150,10 @@ public class MoveScript3D : MonoBehaviour
     {
       
         
-        //let's rotate our player depending on where we look:
-        myPlayer.transform.eulerAngles = new Vector2(0, lookInput.y) * lookSpeed;
-
+        //let's store the rotation of our Player in PlayerData
+        //myPlayer.transform.eulerAngles = new Vector2(0, lookInput.y) * lookSpeed;
+        //myPlayer.lookRotation.eulerAngles = new Vector2(0, lookInput.y) * lookSpeed;
+        
         //instead of moving our player in absolute values, we need to move it relative to where she is looking
         //Unity (thankfully) gives us a Vector pointing in the direction we would describe as "forward"
         // we can add a fraction of that vector to our current position to move forward
