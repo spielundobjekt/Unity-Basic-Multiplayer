@@ -11,19 +11,31 @@ using UnityEngine;
 
 public class PlayerData : Mirror.NetworkBehaviour
 {
-    public Vector3 movementDirection;
-    Surroundings mySurroundings;
-    public Quaternion lookRotation;
+    public Vector3 movementDirection;       //here, we will store the Vector this player is moving in
+    public Quaternion lookRotation;         //here we store the Rotation of the Player's gaze
+
+    Surroundings mySurroundings;            //helper Object to check for things around us, 
+                                            //will be used later
 
     //We do some things in Awake() because this gets called before the Start() Script of anything else is called.
     private void Awake()
     {
         Debug.Log("I am alive!");
 
+        //connect to the script that does the check for the surroundings
         mySurroundings = GetComponent<Surroundings>();
 
         //Let's let the GameData Script know that we exist!
         GameData.instance.players.Add(this);
+    }
+
+    //This gets called when the Network shuts down
+    //Or the Player is otherwise removed
+    private void OnDestroy()
+    {
+        //since we keep track of our players in the GameData.instance.players List, we need to keep it tidy
+        //so if one Player leaves, we need to remove her reference from that list
+        GameData.instance.players.Remove(this);
     }
 
 
