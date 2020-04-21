@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -8538672736195615068}
   - component: {fileID: -8070949637359398358}
   m_Layer: 0
-  m_Name: Representation3D
+  m_Name: Representation3DBillboards
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -97,22 +97,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 746e6d06d035c3342be32474a57877f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: {x: 2.2, y: 2.2}
-  HowManyAnimationPicsperRow: 3
-  HowManyAnimationRows: 3
   idleAnim: []
   walkLeftRight: []
   walkTowards: []
   walkAway: []
-  charName: kati
-  bReset: 0
-  bFlippedAnim: 0
-  pos: {x: 0, y: 0, z: 0}
-  mov: {x: 0, y: 0, z: 0}
+  HowManyAnimationPicsperRow: 3
+  HowManyAnimationRows: 3
   myAnimState: 0
+  animFrame: 0
   animSpeed: 10
-  myDirection: left
-  bWalkInCircles: 0
   visibleDotProductForward: 0
   visibleDotProductRight: 0
 --- !u!114 &3294345836424675383

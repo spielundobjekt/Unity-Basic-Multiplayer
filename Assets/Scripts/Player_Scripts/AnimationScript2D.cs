@@ -14,7 +14,7 @@ using System.IO;
 // We presume this script is a Child of the GameObject that holds the PlayerData Script
 /// </summary>
 
-public class AnimationScript2D : Mirror.NetworkBehaviour
+public class AnimationScript2D : MonoBehaviour
 {
 	
     //We extract the Sprites from a texture into arrays, and then display each of them for a couple of frames 
@@ -91,10 +91,10 @@ public class AnimationScript2D : Mirror.NetworkBehaviour
 
         //find the TextMesh, so we can write things to it.
         infoText = GetComponentInChildren<TextMesh> ();
-
+        
         //here we load the data from disk to be shown with our SpriteRenderer
         //we want to do this in the very beginning, before Update is called
-        RpcGenerateSpritesFromFile();
+        GenerateSpritesFromFile();
 
         //In order to show our Sprites in 2D view, we must make sure our SpriteRenderer is Facing upwards
         transform.rotation = Quaternion.Euler(new Vector3(90,0,0));
@@ -128,25 +128,18 @@ public class AnimationScript2D : Mirror.NetworkBehaviour
     // If I have time (and I don't always do), I try to order the function in the same order that they are called in.
     //------------------------------------------------------------------------------------------------------------------------
 
-
+    
 
     //--------------------------------------
     // Load the specific Texture from a .png file in the Resources Folder
     // At some point, we can point this to a location online to download more resources, 
     // or change them without changing the code
     //--------------------------------------
-    [Mirror.ClientRpc]
-    public void RpcGenerateSpritesFromFile()
+    public void GenerateSpritesFromFile()
     {
-        //Let's check if we have a name set up in the UI for our Player
-        //also: you should always compare two strings with the .Equals() function
-        // and not use ==
-        //That's what people tell me. It's safer with .Equals
-        if (!CharacterUISetupBridge.localCharacterName.Equals("none"))
-        {
-            myPlayer.characterName = CharacterUISetupBridge.localCharacterName;
-        }
+        Debug.Log("This is called on all clients...");
 
+       
         //load Data from the Resources Folder into a Texture (see http://hyperdramatik.net/mediawiki/index.php?title=GlossarCG#Textur )
         Texture2D charImage = Resources.Load("Characters/" + myPlayer.characterName + "_character") as Texture2D;
 
