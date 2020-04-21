@@ -93,17 +93,13 @@ public class AnimationScript2D : MonoBehaviour
 
         //find the TextMesh, so we can write things to it.
         infoText = GetComponentInChildren<TextMesh> ();
-        
-        //here we load the data from disk to be shown with our SpriteRenderer
-        //we want to do this in the very beginning, before Update is called
-        
-        
-        //I think this needs to be called from the server!
-        GenerateSpritesFromFile();
-
+                
         //In order to show our Sprites in 2D view, we must make sure our SpriteRenderer is Facing upwards
         transform.rotation = Quaternion.Euler(new Vector3(90,0,0));
 
+        //since we do not know exactly when we can start loading our image data
+        //(our character name might not be set up yet, because we receive that info from the server)
+        //we have to start in a state that doesn't do anything
         myAnimState = STATE_INIT;
     }
 
@@ -114,23 +110,28 @@ public class AnimationScript2D : MonoBehaviour
     //--------------------------------------
     void Update(){
 
+        //We cannot be sure anymore, when everything is set up for us to load our image data
+
+        //We use our STATE_INIT to check that our Image Data is not yet loaded
+        if (myAnimState != STATE_INIT)
+        {
+            //First, we need to figure out which Animation we should play
+            //because things might have changed from the last frame
+            SetAnimationForCharacter();
+
+            //once we have that figured out, we can call a function that does the actual "playing"
+            AnimateState();
+        }
+
+        //we need to figure out if we are ready depending on PlayerData, which gets its info directly from the server
         if (myPlayer.bReadyToLoadSprites && myAnimState == STATE_INIT)
         {
             GenerateSpritesFromFile();
             myAnimState = STATE_IDLE;
         }
 
-        if (myAnimState == STATE_INIT)
-        {
-            return;
-        }
-
-        //First, we need to figure out which Animation we should play
-        //because things might have changed from the last frame
-        SetAnimationForCharacter();
-
-        //once we have that figured out, we can call a function that does the actual "playing"
-        AnimateState();
+        
+        
         
     }
 
@@ -200,6 +201,9 @@ public class AnimationScript2D : MonoBehaviour
     // Figure out which Image of the Animation Sequence to show
      //--------------------------------------
     public void SetAnimationForCharacter(){
+
+        //make sure our basic animation state is STATE_IDLE - we will change our state if there is a need for that
+        myAnimState = STATE_IDLE;
 
         //transfer our movement Vector from the variable "movementDirection" from the PlayerData Script into a local variable
         //the value of this variable was set by a different script - in our case, the Move2D script
