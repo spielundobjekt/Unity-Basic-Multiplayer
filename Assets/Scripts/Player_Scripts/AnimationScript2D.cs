@@ -41,7 +41,8 @@ public class AnimationScript2D : MonoBehaviour
 
     public int myAnimState;                     //in this variable, we want to store the current State of our Animation
 
-    const int STATE_IDLE = 0;                   //these are all variables whose value will never change (which is why they have the word "const" in front)
+    const int STATE_INIT = -1;                  //these are all variables whose value will never change (which is why they have the word "const" in front)
+    const int STATE_IDLE = 0;                   
     const int STATE_WALK_UP = 1;
     const int STATE_WALK_DOWN = 2;
 	const int STATE_WALK_LEFT = 3;
@@ -73,6 +74,8 @@ public class AnimationScript2D : MonoBehaviour
     TextMesh infoText;                  //a variable that references our TextMesh that can (for example) display our character's name
     PlayerData myPlayer;               //a variable that references the PlayerData Object, in which we store all sorts of Player related information
 
+    bool bHasLoadedSprites = false;
+
     //--------------------------------------
     // We use Start() to find the references for a lot of our Variables
     // If we do it this way, we don't have to rely on connecting things in the editor that much.
@@ -101,6 +104,7 @@ public class AnimationScript2D : MonoBehaviour
         //In order to show our Sprites in 2D view, we must make sure our SpriteRenderer is Facing upwards
         transform.rotation = Quaternion.Euler(new Vector3(90,0,0));
 
+        myAnimState = STATE_INIT;
     }
 
     //--------------------------------------
@@ -109,6 +113,17 @@ public class AnimationScript2D : MonoBehaviour
     // :-)
     //--------------------------------------
     void Update(){
+
+        if (myPlayer.bReadyToLoadSprites && myAnimState == STATE_INIT)
+        {
+            GenerateSpritesFromFile();
+            myAnimState = STATE_IDLE;
+        }
+
+        if (myAnimState == STATE_INIT)
+        {
+            return;
+        }
 
         //First, we need to figure out which Animation we should play
         //because things might have changed from the last frame
@@ -138,7 +153,7 @@ public class AnimationScript2D : MonoBehaviour
     //--------------------------------------
     public void GenerateSpritesFromFile()
     {
-        Debug.Log("This is called on all clients...");
+        Debug.Log("Loading Sprites on Client Device...");
 
        
         //load Data from the Resources Folder into a Texture (see http://hyperdramatik.net/mediawiki/index.php?title=GlossarCG#Textur )
@@ -185,9 +200,6 @@ public class AnimationScript2D : MonoBehaviour
     // Figure out which Image of the Animation Sequence to show
      //--------------------------------------
     public void SetAnimationForCharacter(){
-
-        //make sure our animation state at the beginning of the frame is IDLE - we will change our state if there is a need for that
-		myAnimState = STATE_IDLE;
 
         //transfer our movement Vector from the variable "movementDirection" from the PlayerData Script into a local variable
         //the value of this variable was set by a different script - in our case, the Move2D script
