@@ -44,7 +44,8 @@ public class AnimationScript3DBillboards : MonoBehaviour
 
     public int myAnimState;             //in this variable, we want to store the current State of our Animation								
 
-    const int STATE_IDLE_TOWARDS = 0;   //these are all variables whose value will never change (which is why they have the word "const" in front)
+    const int STATE_INIT = -1;          //these are all variables whose value will never change (which is why they have the word "const" in front)
+    const int STATE_IDLE_TOWARDS = 0;   
     const int STATE_IDLE_LEFT = 1;
 	const int STATE_IDLE_RIGHT = 2;
 	const int STATE_IDLE_AWAY = 3;
@@ -104,11 +105,11 @@ public class AnimationScript3DBillboards : MonoBehaviour
 
         //find the TextMesh, so we can write things to it.
 		infoText = GetComponentInChildren<TextMesh> ();
-
-        //here we load the data from disk to be shown on our Mesh
-        //we want to do this in the very beginning, before Update is called
-		GenerateTextureFromFile ();
-
+        
+        //since we do not know exactly when we can start loading our image data
+        //(our character name might not be set up yet, because we receive that info from the server)
+        //we have to start in a state that doesn't do anything
+        myAnimState = STATE_INIT;
     }
 
 
@@ -119,12 +120,26 @@ public class AnimationScript3DBillboards : MonoBehaviour
     //--------------------------------------
     void Update()
     {
-        //First, we need to figure out which Animation we should play
-        //because things might have changed from the last frame
-        SetAnimationForCharacter();
 
-        //once we have that figured out, we can call a function that does the actual "playing"
-        AnimateState();
+        //We cannot be sure anymore, when everything is set up for us to load our image data
+
+        //We use our STATE_INIT to check that our Image Data is not yet loaded
+        if (myAnimState != STATE_INIT)
+        {
+            //First, we need to figure out which Animation we should play
+            //because things might have changed from the last frame
+            SetAnimationForCharacter();
+
+            //once we have that figured out, we can call a function that does the actual "playing"
+            AnimateState();
+        }
+
+        //we need to figure out if we are ready depending on PlayerData, which gets its info directly from the server
+        if (myPlayer.bReadyToLoadSprites && myAnimState == STATE_INIT)
+        {
+            GenerateTextureFromFile();
+            myAnimState = STATE_IDLE_TOWARDS;
+        }
 
     }
 
@@ -213,8 +228,8 @@ public class AnimationScript3DBillboards : MonoBehaviour
     //--------------------------------------
     public void SetAnimationForCharacter(){
 
-        //make sure our basic animation state is IDLE_TOWARDS - we will change our state if there is a need for that
-		myAnimState = STATE_IDLE_TOWARDS;
+        //let's assume our animation state is IDLE_TOWARDS - we will change our state if there is a need for that
+        myAnimState = STATE_IDLE_TOWARDS;
 
         //First, let's find out if our Player is actually moving, or just standing around.
         bool bPlayerMoves = false;

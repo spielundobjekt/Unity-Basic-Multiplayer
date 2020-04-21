@@ -66,7 +66,7 @@ public class PlayerData : Mirror.NetworkBehaviour
         characterName = name;
         Debug.Log("Server-CharacterName:" + name);
         //now that we have figured out our name on our specific computer, let's send this information to all the other computers
-        //RpcMyName(characterName);
+        RpcMyName(characterName);
     }
 
     [Mirror.ClientRpc]
