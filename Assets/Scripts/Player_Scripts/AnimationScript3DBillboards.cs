@@ -147,15 +147,6 @@ public class AnimationScript3DBillboards : MonoBehaviour
     //--------------------------------------
     public void GenerateTextureFromFile(){
 
-        //Let's check if we have a name set up in the UI for our Player
-        //also: you should always compare two strings with the .Equals() function
-        // and not use ==
-        //That's what people tell me. It's safer with .Equals
-        if (!CharacterUISetupBridge.localCharacterName.Equals("none"))
-        {
-            myPlayer.characterName = CharacterUISetupBridge.localCharacterName;
-        }
-
         //load Data from the Resources Folder into a Texture (see http://hyperdramatik.net/mediawiki/index.php?title=GlossarCG#Textur )
         Texture2D charImage = Resources.Load("Characters/" + myPlayer.characterName + "_character") as Texture2D;
 
