@@ -146,22 +146,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049cad788b42ff84c92cd6e1107e2ea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: {x: 1, y: 1}
   idleAnim: []
-  wlAnim: []
-  wdAnim: []
-  wuAnim: []
-  death: {fileID: 21300000, guid: 15494b709c0781b489ce813d1b042fa1, type: 3}
-  charName: friedrich
-  bReset: 0
-  bDead: 0
-  pos: {x: 0, y: 0, z: 0}
-  mov: {x: 0, y: 0, z: 0}
+  walkLeftRightAnim: []
+  walkDownAnim: []
+  walkUpAnim: []
+  HowManyAnimationPicsperRow: 3
+  HowManyAnimationRows: 3
   myAnimState: 0
+  animFrame: 0
   animSpeed: 10
-  bFlippedAnim: 0
-  myDirection: left
-  bWalkInCircles: 0
 --- !u!114 &1486308204667671450
 MonoBehaviour:
   m_ObjectHideFlags: 0

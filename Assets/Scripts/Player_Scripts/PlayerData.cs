@@ -29,6 +29,33 @@ public class PlayerData : Mirror.NetworkBehaviour
 
         //Let's let the GameData Script know that we exist!
         GameData.instance.players.Add(this);
+
+
+        //here we have to distribute our name to all other clients
+
+        //first, only do this for the local Player, because they have access to the name the Player was given by the User
+        if (isLocalPlayer)
+        {
+            //get the name from the input box -
+            //but what if there is nothing written in the input box? Well, then we are called friedrich
+            if (CharacterUISetupBridge.localCharacterName.Equals("none")){
+
+                characterName = "friedrich";
+            }
+            else
+            {
+                characterName = CharacterUISetupBridge.localCharacterName;
+            }
+            
+            //now that we have figured out our name on our specific computer, let's send this information to all the other computers
+            RpcMyName(characterName);
+        }
+    }
+
+    [Mirror.ClientRpc]
+    void RpcMyName(string name)
+    {
+        characterName = name;
     }
 
     //This gets called when the Network shuts down

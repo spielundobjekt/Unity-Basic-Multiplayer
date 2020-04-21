@@ -10,7 +10,7 @@ using UnityEngine;
 
 public class CharacterUISetupBridge : MonoBehaviour
 {
-    public static string localCharacterName;    //this is a variable that can be accessed by other scripts 
+    public static string localCharacterName = "none";    //this is a variable that can be accessed by other scripts 
                                                 //to do something with its contents.
                                                 //That's why it is static
 
