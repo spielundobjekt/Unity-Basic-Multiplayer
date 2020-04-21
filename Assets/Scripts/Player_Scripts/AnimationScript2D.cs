@@ -14,7 +14,7 @@ using System.IO;
 // We presume this script is a Child of the GameObject that holds the PlayerData Script
 /// </summary>
 
-public class AnimationScript2D : MonoBehaviour
+public class AnimationScript2D : Mirror.NetworkBehaviour
 {
 	
     //We extract the Sprites from a texture into arrays, and then display each of them for a couple of frames 
@@ -94,7 +94,7 @@ public class AnimationScript2D : MonoBehaviour
 
         //here we load the data from disk to be shown with our SpriteRenderer
         //we want to do this in the very beginning, before Update is called
-        GenerateSpritesFromFile();
+        RpcGenerateSpritesFromFile();
 
         //In order to show our Sprites in 2D view, we must make sure our SpriteRenderer is Facing upwards
         transform.rotation = Quaternion.Euler(new Vector3(90,0,0));
@@ -135,7 +135,8 @@ public class AnimationScript2D : MonoBehaviour
     // At some point, we can point this to a location online to download more resources, 
     // or change them without changing the code
     //--------------------------------------
-    public void GenerateSpritesFromFile()
+    [Mirror.ClientRpc]
+    public void RpcGenerateSpritesFromFile()
     {
         //Let's check if we have a name set up in the UI for our Player
         //also: you should always compare two strings with the .Equals() function
