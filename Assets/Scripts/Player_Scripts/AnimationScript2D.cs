@@ -73,7 +73,6 @@ public class AnimationScript2D : MonoBehaviour
     TextMesh infoText;                  //a variable that references our TextMesh that can (for example) display our character's name
     PlayerData myPlayer;               //a variable that references the PlayerData Object, in which we store all sorts of Player related information
 
-
     //--------------------------------------
     // We use Start() to find the references for a lot of our Variables
     // If we do it this way, we don't have to rely on connecting things in the editor that much.
@@ -94,6 +93,9 @@ public class AnimationScript2D : MonoBehaviour
         
         //here we load the data from disk to be shown with our SpriteRenderer
         //we want to do this in the very beginning, before Update is called
+        
+        
+        //I think this needs to be called from the server!
         GenerateSpritesFromFile();
 
         //In order to show our Sprites in 2D view, we must make sure our SpriteRenderer is Facing upwards
@@ -107,7 +109,6 @@ public class AnimationScript2D : MonoBehaviour
     // :-)
     //--------------------------------------
     void Update(){
-        
 
         //First, we need to figure out which Animation we should play
         //because things might have changed from the last frame

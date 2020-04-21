@@ -11668,6 +11668,11 @@ PrefabInstance:
       propertyPath: m_text
       value: Enter Name
       objectReference: {fileID: 0}
+    - target: {fileID: 7766437753855398416, guid: d59cd381736bd1e4d93ce6eca5139558,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7766437754808977579, guid: d59cd381736bd1e4d93ce6eca5139558,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -11692,6 +11697,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: friedrich
+      objectReference: {fileID: 0}
+    - target: {fileID: 7766437754897715757, guid: d59cd381736bd1e4d93ce6eca5139558,
+        type: 3}
+      propertyPath: m_Text
+      value: lena
       objectReference: {fileID: 0}
     - target: {fileID: 7766437755408498190, guid: d59cd381736bd1e4d93ce6eca5139558,
         type: 3}
