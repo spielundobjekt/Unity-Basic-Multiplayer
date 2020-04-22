@@ -64,6 +64,7 @@ public class PlayerData : Mirror.NetworkBehaviour
     void CmdSetCharacterName(string name)
     {
         characterName = name;
+        bReadyToLoadSprites = true;
         Debug.Log("Server-CharacterName:" + name);
         //now that we have figured out our name on our specific computer, let's send this information to all the other computers
         RpcMyName(characterName);
