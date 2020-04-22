@@ -202,7 +202,7 @@ public class AnimationScript2D : MonoBehaviour
      //--------------------------------------
     public void SetAnimationForCharacter(){
 
-        //make sure our basic animation state is STATE_IDLE - we will change our state if there is a need for that
+        //let's assume our animation state is STATE_IDLE - we will change our state if there is a need for that
         myAnimState = STATE_IDLE;
 
         //transfer our movement Vector from the variable "movementDirection" from the PlayerData Script into a local variable
