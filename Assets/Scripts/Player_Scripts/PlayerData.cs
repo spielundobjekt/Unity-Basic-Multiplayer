@@ -34,7 +34,7 @@ public class PlayerData : Mirror.NetworkBehaviour
         GameData.instance.players.Add(this);
 
         //initialize our characterName so we know it has not been set up yet
-        characterName = "init";
+        characterName = "friedrich";
     }
 
     //All Networking stuff needs to be called in Start (and all functions onwards)
