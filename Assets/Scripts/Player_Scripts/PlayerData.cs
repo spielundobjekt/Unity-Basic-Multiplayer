@@ -14,6 +14,7 @@ public class PlayerData : Mirror.NetworkBehaviour
     public Vector3 movementDirection;       //here, we will store the Vector this player is moving in
     public Quaternion lookRotation;         //here we store the Rotation of the Player's gaze
 
+    [Mirror.SyncVar]                        //we use this to synchronize variables across server and clients
     public string characterName;            //this is the name of our character Sprite 
 
     Surroundings mySurroundings;            //helper Object to check for things around us, 
@@ -21,6 +22,7 @@ public class PlayerData : Mirror.NetworkBehaviour
 
     public enum ClientState {CS_INIT, CS_HASDATA};
 
+    [Mirror.SyncVar]
     public ClientState myState = ClientState.CS_INIT;
 
     public bool bReadyToLoadSprites = false;
@@ -37,8 +39,10 @@ public class PlayerData : Mirror.NetworkBehaviour
         //Let's let the GameData Script know that we exist!
         GameData.instance.players.Add(this);
 
-        //initialize our characterName so we know it has not been set up yet
+        //initialize our characterName, so there is something to load even if nothing has been put into the name field
         characterName = "friedrich";
+
+        //GetComponent<Mirror.NetworkIdentity>().au
     }
 
     //All Networking stuff needs to be called in Start (and all functions onwards)
@@ -49,9 +53,8 @@ public class PlayerData : Mirror.NetworkBehaviour
         if (isLocalPlayer)
         {
             //get the name from the input box -
-            //characterName = CharacterUISetupBridge.localCharacterName;
-            characterName = "lena";// CharacterUISetupBridge.localCharacterName;
-
+            characterName = CharacterUISetupBridge.localCharacterName;
+            
             Debug.Log("CharacterName: " + characterName);
 
             //set the character name on the server as well...
@@ -60,40 +63,15 @@ public class PlayerData : Mirror.NetworkBehaviour
         }
         
     }
-
-    private void Update()
-    {
-        if (!isLocalPlayer && myState==ClientState.CS_INIT)
-        {
-            CmdGetDataFromServer();
-        }
-    }
-
-    [Mirror.Command]
-    void CmdSendDataToServer(string name)
-    {
-        characterName = name;
-        //bReadyToLoadSprites = true;
-        Debug.Log("Server Received Info for CharacterName:" + name);
-        //now that we have figured out our name on our specific computer, let's send this information to all the other computers
-        RpcDistributeDataFromServerToClients(characterName);
-    }
-
-    [Mirror.ClientRpc]
-    void RpcDistributeDataFromServerToClients(string name)
-    {
-        characterName = name;
         
-        Debug.Log("Client-Players' Character Name:" + name);
+    [Mirror.Command]
+    void CmdSendDataToServer(string nameFromClient)
+    {
+        characterName = nameFromClient;
         myState = ClientState.CS_HASDATA;
-        
     }
 
-    [Mirror.Command]
-    void CmdGetDataFromServer()
-    {
-        RpcDistributeDataFromServerToClients(characterName);
-    }
+
 
     //This gets called when the Network shuts down
     //Or the Player is otherwise removed

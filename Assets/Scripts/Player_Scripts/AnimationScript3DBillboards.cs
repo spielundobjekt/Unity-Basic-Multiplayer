@@ -124,7 +124,7 @@ public class AnimationScript3DBillboards : MonoBehaviour
         //We cannot be sure anymore, when everything is set up for us to load our image data
 
         //We use our STATE_INIT to check that our Image Data is not yet loaded
-        if (myAnimState != STATE_INIT)
+        if (myAnimState != STATE_INIT && !myPlayer.isServer)
         {
             //First, we need to figure out which Animation we should play
             //because things might have changed from the last frame
@@ -135,7 +135,7 @@ public class AnimationScript3DBillboards : MonoBehaviour
         }
 
         //we need to figure out if we are ready depending on PlayerData, which gets its info directly from the server
-        if (myPlayer.myState == PlayerData.ClientState.CS_HASDATA && myAnimState == STATE_INIT)
+        if (myPlayer.myState == PlayerData.ClientState.CS_HASDATA && myAnimState == STATE_INIT && !myPlayer.isServer)
         {
             GenerateTextureFromFile();
             myAnimState = STATE_IDLE_TOWARDS;
