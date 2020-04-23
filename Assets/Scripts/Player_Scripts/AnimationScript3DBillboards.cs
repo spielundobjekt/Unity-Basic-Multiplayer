@@ -135,7 +135,7 @@ public class AnimationScript3DBillboards : MonoBehaviour
         }
 
         //we need to figure out if we are ready depending on PlayerData, which gets its info directly from the server
-        if (myPlayer.bReadyToLoadSprites && myAnimState == STATE_INIT)
+        if (myPlayer.myState == PlayerData.ClientState.CS_HASDATA && myAnimState == STATE_INIT)
         {
             GenerateTextureFromFile();
             myAnimState = STATE_IDLE_TOWARDS;

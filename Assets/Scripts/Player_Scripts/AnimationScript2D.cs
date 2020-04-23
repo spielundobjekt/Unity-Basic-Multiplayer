@@ -73,9 +73,7 @@ public class AnimationScript2D : MonoBehaviour
 
     TextMesh infoText;                  //a variable that references our TextMesh that can (for example) display our character's name
     PlayerData myPlayer;               //a variable that references the PlayerData Object, in which we store all sorts of Player related information
-
-    bool bHasLoadedSprites = false;
-
+    
     //--------------------------------------
     // We use Start() to find the references for a lot of our Variables
     // If we do it this way, we don't have to rely on connecting things in the editor that much.
@@ -124,7 +122,7 @@ public class AnimationScript2D : MonoBehaviour
         }
 
         //we need to figure out if we are ready depending on PlayerData, which gets its info directly from the server
-        if (myPlayer.bReadyToLoadSprites && myAnimState == STATE_INIT)
+        if (myPlayer.myState==PlayerData.ClientState.CS_HASDATA && myAnimState == STATE_INIT)
         {
             GenerateSpritesFromFile();
             myAnimState = STATE_IDLE;

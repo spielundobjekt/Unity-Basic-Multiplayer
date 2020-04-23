@@ -19,6 +19,10 @@ public class PlayerData : Mirror.NetworkBehaviour
     Surroundings mySurroundings;            //helper Object to check for things around us, 
                                             //will be used later
 
+    public enum ClientState {CS_INIT, CS_HASDATA};
+
+    public ClientState myState = ClientState.CS_INIT;
+
     public bool bReadyToLoadSprites = false;
 
     //We do some things in Awake() because this gets called before the Start() Script of anything else is called.
@@ -45,38 +49,50 @@ public class PlayerData : Mirror.NetworkBehaviour
         if (isLocalPlayer)
         {
             //get the name from the input box -
-            characterName = CharacterUISetupBridge.localCharacterName;
+            //characterName = CharacterUISetupBridge.localCharacterName;
+            characterName = "lena";// CharacterUISetupBridge.localCharacterName;
 
             Debug.Log("CharacterName: " + characterName);
 
             //set the character name on the server as well...
-            CmdSetCharacterName(characterName);
-            bReadyToLoadSprites = true;
+            CmdSendDataToServer(characterName);
+            myState = ClientState.CS_HASDATA;            
         }
+        
     }
 
     private void Update()
     {
+        if (!isLocalPlayer && myState==ClientState.CS_INIT)
+        {
+            CmdGetDataFromServer();
+        }
+    }
+
+    [Mirror.Command]
+    void CmdSendDataToServer(string name)
+    {
+        characterName = name;
+        //bReadyToLoadSprites = true;
+        Debug.Log("Server Received Info for CharacterName:" + name);
+        //now that we have figured out our name on our specific computer, let's send this information to all the other computers
+        RpcDistributeDataFromServerToClients(characterName);
+    }
+
+    [Mirror.ClientRpc]
+    void RpcDistributeDataFromServerToClients(string name)
+    {
+        characterName = name;
+        
+        Debug.Log("Client-Players' Character Name:" + name);
+        myState = ClientState.CS_HASDATA;
         
     }
 
     [Mirror.Command]
-    void CmdSetCharacterName(string name)
+    void CmdGetDataFromServer()
     {
-        characterName = name;
-        bReadyToLoadSprites = true;
-        Debug.Log("Server-CharacterName:" + name);
-        //now that we have figured out our name on our specific computer, let's send this information to all the other computers
-        RpcMyName(characterName);
-    }
-
-    [Mirror.ClientRpc]
-    void RpcMyName(string name)
-    {
-        characterName = name;
-        
-        Debug.Log("Other Players' Character Name:" + name);
-        bReadyToLoadSprites= true;
+        RpcDistributeDataFromServerToClients(characterName);
     }
 
     //This gets called when the Network shuts down
