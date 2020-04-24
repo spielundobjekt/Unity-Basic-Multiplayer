@@ -101,6 +101,23 @@ namespace Mirror
         [Tooltip("Maximum number of concurrent connections.")]
         public int maxConnections = 4;
 
+        // This value is passed to NetworkServer in SetupServer
+        /// <summary>
+        /// Should the server disconnect remote connections that have gone silent for more than Server Idle Timeout?
+        /// </summary>
+        [Tooltip("Server Only - Disconnects remote connections that have been silent for more than Server Idle Timeout")]
+        public bool disconnectInactiveConnections;
+
+        // This value is passed to NetworkServer in SetupServer
+        /// <summary>
+        /// Timeout in seconds since last message from a client after which server will auto-disconnect.
+        /// <para>By default, clients send at least a Ping message every 2 seconds.</para>
+        /// <para>The Host client is immune from idle timeout disconnection.</para>
+        /// <para>Default value is 60 seconds.</para>
+        /// </summary>
+        [Tooltip("Timeout in seconds since last message from a client after which server will auto-disconnect if Disconnect Inactive Connections is enabled.")]
+        public float serverIdleTimeout = 60f;
+
         [Header("Authentication")]
         [Tooltip("Authentication component attached to this object")]
         public NetworkAuthenticator authenticator;
@@ -290,6 +307,10 @@ namespace Mirror
 
             ConfigureServerFrameRate();
 
+            // Copy auto-disconnect settings to NetworkServer
+            NetworkServer.serverIdleTimeout = serverIdleTimeout;
+            NetworkServer.disconnectInactiveConnections = disconnectInactiveConnections;
+
             // start listening to network connections
             NetworkServer.Listen(maxConnections);
 
@@ -311,7 +332,6 @@ namespace Mirror
 
         /// <summary>
         /// This starts a new server.
-        /// <para>This uses the networkPort property as the listen port.</para>
         /// </summary>
         /// <returns></returns>
         public void StartServer()
@@ -349,7 +369,7 @@ namespace Mirror
         }
 
         /// <summary>
-        /// This starts a network client. It uses the networkAddress and networkPort properties as the address to connect to.
+        /// This starts a network client. It uses the networkAddress property as the address to connect to.
         /// <para>This makes the newly created client connect to the server immediately.</para>
         /// </summary>
         public void StartClient()
@@ -384,7 +404,7 @@ namespace Mirror
         }
 
         /// <summary>
-        /// This starts a network client. It uses the networkAddress and networkPort properties as the address to connect to.
+        /// This starts a network client. It uses the Uri parameter as the address to connect to.
         /// <para>This makes the newly created client connect to the server immediately.</para>
         /// </summary>
         /// <param name="uri">location of the server to connect to</param>
@@ -586,9 +606,12 @@ namespace Mirror
             {
                 ServerChangeScene(offlineScene);
             }
+
             CleanupNetworkIdentities();
 
             startPositionIndex = 0;
+
+            networkSceneName = "";
         }
 
         /// <summary>
@@ -620,6 +643,8 @@ namespace Mirror
             }
 
             CleanupNetworkIdentities();
+
+            networkSceneName = "";
         }
 
         /// <summary>
@@ -733,7 +758,7 @@ namespace Mirror
         {
             foreach (NetworkIdentity identity in Resources.FindObjectsOfTypeAll<NetworkIdentity>())
             {
-                identity.MarkForReset();
+                identity.Reset();
             }
         }
 
@@ -850,19 +875,30 @@ namespace Mirror
                     loadingSceneAsync = SceneManager.LoadSceneAsync(newSceneName);
                     break;
                 case SceneOperation.LoadAdditive:
-                    if (!SceneManager.GetSceneByName(newSceneName).IsValid())
+                    // Ensure additive scene is not already loaded on client by name or path
+                    // since we don't know which was passed in the Scene message
+                    if (!SceneManager.GetSceneByName(newSceneName).IsValid() && !SceneManager.GetSceneByPath(newSceneName).IsValid())
                         loadingSceneAsync = SceneManager.LoadSceneAsync(newSceneName, LoadSceneMode.Additive);
                     else
-                        Debug.LogWarningFormat("Scene {0} is already loaded", newSceneName);
+                    {
+                        Debug.LogWarning($"Scene {newSceneName} is already loaded");
+
+                        // Re-enable the transport that we disabled before entering this switch
+                        Transport.activeTransport.enabled = true;
+                    }
                     break;
                 case SceneOperation.UnloadAdditive:
-                    if (SceneManager.GetSceneByName(newSceneName).IsValid())
-                    {
-                        if (SceneManager.GetSceneByName(newSceneName) != null)
-                            loadingSceneAsync = SceneManager.UnloadSceneAsync(newSceneName, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
-                    }
+                    // Ensure additive scene is actually loaded on client by name or path
+                    // since we don't know which was passed in the Scene message
+                    if (SceneManager.GetSceneByName(newSceneName).IsValid() || SceneManager.GetSceneByPath(newSceneName).IsValid())
+                        loadingSceneAsync = SceneManager.UnloadSceneAsync(newSceneName, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
                     else
-                        Debug.LogWarning("Cannot unload the active scene with UnloadAdditive operation");
+                    {
+                        Debug.LogWarning($"Cannot unload {newSceneName} with UnloadAdditive operation");
+
+                        // Re-enable the transport that we disabled before entering this switch
+                        Transport.activeTransport.enabled = true;
+                    }
                     break;
             }
 
@@ -1365,7 +1401,7 @@ namespace Mirror
                 if (!ClientScene.ready) ClientScene.Ready(conn);
                 if (autoCreatePlayer)
                 {
-                    ClientScene.AddPlayer();
+                    ClientScene.AddPlayer(conn);
                 }
             }
         }
@@ -1427,7 +1463,7 @@ namespace Mirror
             if (clientSceneOperation == SceneOperation.Normal && autoCreatePlayer && ClientScene.localPlayer == null)
             {
                 // add player if existing one is null
-                ClientScene.AddPlayer();
+                ClientScene.AddPlayer(conn);
             }
         }
 

@@ -4,6 +4,13 @@
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
+[Aa]ssets/AssetStore
+[Aa]ssets/AssetStore.meta
+[Aa]ssets/K4A.meta
+[Aa]ssets/Plugins.meta
+
+[Aa]ssets/K4A
+[Aa]ssets/Plugins
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # [Aa]ssets/AssetStoreTools*

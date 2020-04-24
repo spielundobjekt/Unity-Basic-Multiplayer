@@ -56,6 +56,21 @@ namespace Mirror
         /// </summary>
         public static bool active { get; private set; }
 
+        /// <summary>
+        /// Should the server disconnect remote connections that have gone silent for more than Server Idle Timeout?
+        /// <para>This value is initially set from NetworkManager in SetupServer and can be changed at runtime</para>
+        /// </summary>
+        public static bool disconnectInactiveConnections;
+
+        /// <summary>
+        /// Timeout in seconds since last message from a client after which server will auto-disconnect.
+        /// <para>This value is initially set from NetworkManager in SetupServer and can be changed at runtime</para>
+        /// <para>By default, clients send at least a Ping message every 2 seconds.</para>
+        /// <para>The Host client is immune from idle timeout disconnection.</para>
+        /// <para>Default value is 60 seconds.</para>
+        /// </summary>
+        public static float serverIdleTimeout = 60f;
+
         // cache the Send(connectionIds) list to avoid allocating each time
         static readonly List<int> connectionIdsCache = new List<int>();
 
@@ -78,11 +93,7 @@ namespace Mirror
             {
                 DisconnectAll();
 
-                if (dontListen)
-                {
-                    // was never started, so dont stop
-                }
-                else
+                if (!dontListen)
                 {
                     // stop the server.
                     // we do NOT call Transport.Shutdown, because someone only
@@ -409,6 +420,20 @@ namespace Mirror
             if (!active)
                 return;
 
+            // Check for dead clients but exclude the host client because it
+            // doesn't ping itself and therefore may appear inactive.
+            if (disconnectInactiveConnections)
+            {
+                foreach (NetworkConnectionToClient conn in connections.Values)
+                {
+                    if (!conn.IsClientAlive())
+                    {
+                        Debug.LogWarning($"Disconnecting {conn} for inactivity!");
+                        conn.Disconnect();
+                    }
+                }
+            }
+
             // update all server objects
             foreach (KeyValuePair<uint, NetworkIdentity> kvp in NetworkIdentity.spawned)
             {
@@ -676,7 +701,6 @@ namespace Mirror
                 Debug.Log("AddPlayer: playerGameObject has no NetworkIdentity. Please add a NetworkIdentity to " + player);
                 return false;
             }
-            identity.Reset();
 
             // cannot have a player object in "Add" version
             if (conn.identity != null)
@@ -904,7 +928,6 @@ namespace Mirror
                 Debug.LogError("SpawnObject " + obj + " has no NetworkIdentity. Please add a NetworkIdentity to " + obj);
                 return;
             }
-            identity.Reset();
             identity.connectionToClient = (NetworkConnectionToClient)ownerConnection;
 
             // special case to make sure hasAuthority is set
@@ -930,34 +953,53 @@ namespace Mirror
             // one writer for owner, one for observers
             using (PooledNetworkWriter ownerWriter = NetworkWriterPool.GetWriter(), observersWriter = NetworkWriterPool.GetWriter())
             {
-                // serialize all components with initialState = true
-                // (can be null if has none)
-                identity.OnSerializeAllSafely(true, ownerWriter, out int ownerWritten, observersWriter, out int observersWritten);
+                bool isOwner = identity.connectionToClient == conn;
 
-                // convert to ArraySegment to avoid reader allocations
-                // (need to handle null case too)
-                ArraySegment<byte> ownerSegment = ownerWritten > 0 ? ownerWriter.ToArraySegment() : default;
-                ArraySegment<byte> observersSegment = observersWritten > 0 ? observersWriter.ToArraySegment() : default;
+                ArraySegment<byte> payload = CreateSpawnMessagePayload(isOwner, identity, ownerWriter, observersWriter);
 
                 SpawnMessage msg = new SpawnMessage
                 {
                     netId = identity.netId,
                     isLocalPlayer = conn.identity == identity,
-                    isOwner = identity.connectionToClient == conn,
+                    isOwner = isOwner,
                     sceneId = identity.sceneId,
                     assetId = identity.assetId,
                     // use local values for VR support
                     position = identity.transform.localPosition,
                     rotation = identity.transform.localRotation,
-                    scale = identity.transform.localScale
+                    scale = identity.transform.localScale,
+
+                    payload = payload,
                 };
 
-                // use owner segment if 'conn' owns this identity, otherwise
-                // use observers segment
-                msg.payload = msg.isOwner ? ownerSegment : observersSegment;
 
                 conn.Send(msg);
             }
+        }
+
+        static ArraySegment<byte> CreateSpawnMessagePayload(bool isOwner, NetworkIdentity identity, PooledNetworkWriter ownerWriter, PooledNetworkWriter observersWriter)
+        {
+            // Only call OnSerializeAllSafely if there are NetworkBehaviours
+            if (identity.NetworkBehaviours.Length == 0)
+            {
+                return default;
+            }
+
+            // serialize all components with initialState = true
+            // (can be null if has none)
+            ulong dirtyComponentsMask = identity.GetIntialComponentsMask();
+            identity.OnSerializeAllSafely(true, dirtyComponentsMask, ownerWriter, out int ownerWritten, observersWriter, out int observersWritten);
+
+            // convert to ArraySegment to avoid reader allocations
+            // (need to handle null case too)
+            ArraySegment<byte> ownerSegment = ownerWritten > 0 ? ownerWriter.ToArraySegment() : default;
+            ArraySegment<byte> observersSegment = observersWritten > 0 ? observersWriter.ToArraySegment() : default;
+
+            // use owner segment if 'conn' owns this identity, otherwise
+            // use observers segment
+            ArraySegment<byte> payload = isOwner ? ownerSegment : observersSegment;
+
+            return payload;
         }
 
         /// <summary>
@@ -967,14 +1009,9 @@ namespace Mirror
         /// <param name="conn">The connections object to clean up for.</param>
         public static void DestroyPlayerForConnection(NetworkConnection conn)
         {
-            // destroy all objects owned by this connection
+            // destroy all objects owned by this connection, including the player object
             conn.DestroyOwnedObjects();
-
-            if (conn.identity != null)
-            {
-                DestroyObject(conn.identity, true);
-                conn.identity = null;
-            }
+            conn.identity = null;
         }
 
         /// <summary>
@@ -1077,15 +1114,17 @@ namespace Mirror
             identity.ClearObservers();
             if (NetworkClient.active && localClientActive)
             {
-                identity.OnNetworkDestroy();
+                identity.OnStopClient();
             }
+
+            identity.OnStopServer();
 
             // when unspawning, dont destroy the server's object
             if (destroyServerObject)
             {
                 UnityEngine.Object.Destroy(identity.gameObject);
             }
-            identity.MarkForReset();
+            identity.Reset();
         }
 
         /// <summary>
@@ -1159,7 +1198,6 @@ namespace Mirror
                 if (ValidateSceneObject(identity))
                 {
                     if (LogFilter.Debug) Debug.Log("SpawnObjects sceneId:" + identity.sceneId.ToString("X") + " name:" + identity.gameObject.name);
-                    identity.Reset();
                     identity.gameObject.SetActive(true);
                 }
             }

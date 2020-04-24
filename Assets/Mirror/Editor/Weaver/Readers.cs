@@ -51,6 +51,16 @@ namespace Mirror.Weaver
                 Weaver.Error($"Cannot generate reader for component type {variable}. Use a supported type or provide a custom reader");
                 return null;
             }
+            if (variable.FullName == Weaver.ObjectType.FullName)
+            {
+                Weaver.Error($"Cannot generate reader for {variable}. Use a supported type or provide a custom reader");
+                return null;
+            }
+            if (variable.FullName == Weaver.ScriptableObjectType.FullName)
+            {
+                Weaver.Error($"Cannot generate reader for {variable}. Use a supported type or provide a custom reader");
+                return null;
+            }
             if (variable.IsByReference)
             {
                 // error??
@@ -59,12 +69,12 @@ namespace Mirror.Weaver
             }
             if (td.HasGenericParameters && !td.FullName.StartsWith("System.ArraySegment`1", System.StringComparison.Ordinal))
             {
-                Weaver.Error($"Cannot generate reader for generic variable {variable}. Use a concrete type or provide a custom reader");
+                Weaver.Error($"Cannot generate reader for generic variable {variable}. Use a supported type or provide a custom reader");
                 return null;
             }
             if (td.IsInterface)
             {
-                Weaver.Error($"Cannot generate reader for interface variable {variable}. Use a concrete type or provide a custom reader");
+                Weaver.Error($"Cannot generate reader for interface {variable}. Use a supported type or provide a custom reader");
                 return null;
             }
 
@@ -294,11 +304,6 @@ namespace Mirror.Weaver
                 return null;
             }
 
-            if (!Weaver.IsValidTypeToGenerate(variable.Resolve()))
-            {
-                return null;
-            }
-
             string functionName = "_Read" + variable.Name + "_";
             if (variable.DeclaringType != null)
             {
@@ -357,10 +362,13 @@ namespace Mirror.Weaver
                 MethodDefinition ctor = Resolvers.ResolveDefaultPublicCtor(variable);
                 if (ctor == null)
                 {
-                    Weaver.Error($"{variable} can't be deserialized because i has no default constructor");
+                    Weaver.Error($"{variable} can't be deserialized because it has no default constructor");
+                    return;
                 }
 
-                worker.Append(worker.Create(OpCodes.Newobj, ctor));
+                MethodReference ctorRef = Weaver.CurrentAssembly.MainModule.ImportReference(ctor);
+
+                worker.Append(worker.Create(OpCodes.Newobj, ctorRef));
                 worker.Append(worker.Create(OpCodes.Stloc_0));
             }
         }
@@ -371,6 +379,9 @@ namespace Mirror.Weaver
             foreach (FieldDefinition field in variable.Resolve().Fields)
             {
                 if (field.IsStatic || field.IsPrivate)
+                    continue;
+
+                if (field.IsNotSerialized)
                     continue;
 
                 // mismatched ldloca/ldloc for struct/class combinations is invalid IL, which causes crash at runtime
@@ -387,8 +398,9 @@ namespace Mirror.Weaver
                 {
                     Weaver.Error($"{field} has an unsupported type");
                 }
+                FieldReference fieldRef = Weaver.CurrentAssembly.MainModule.ImportReference(field);
 
-                worker.Append(worker.Create(OpCodes.Stfld, field));
+                worker.Append(worker.Create(OpCodes.Stfld, fieldRef));
                 fields++;
             }
             if (fields == 0)

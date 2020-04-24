@@ -4,8 +4,5 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes:
-  - enabled: 1
-    path: Assets/Leoni/Scenes/2d_multiplayer.unity
-    guid: 367397c5ef639ab49ae234dd63647741
+  m_Scenes: []
   m_configObjects: {}

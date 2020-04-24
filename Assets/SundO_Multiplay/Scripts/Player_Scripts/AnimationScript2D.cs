@@ -220,10 +220,31 @@ public class AnimationScript2D : MonoBehaviour
             //we do things here if the value of the x part of the vector was higher
 			if (Math.Abs (locDelta.x) >= Math.Abs (locDelta.z)) {
 				if (locDelta.x > 0.0f) {
-					myAnimState = STATE_WALK_RIGHT;
+                    //there is a bug in the code right now, 
+                    //that flips the animation of other characters (those that we do not control locally)
+                    //in order to fix it for now, we will flip the animation state for those players
+                    if (myPlayer.isLocalPlayer)
+                    {
+                        myAnimState = STATE_WALK_RIGHT;
+                    }
+                    else
+                    {
+                        myAnimState = STATE_WALK_LEFT;
+                    }
 				}
 				if (locDelta.x < 0.0) {
-					myAnimState = STATE_WALK_LEFT;
+                    //there is a bug in the code right now, 
+                    //that flips the animation of other characters (those that we do not control locally)
+                    //in order to fix it for now, we will flip the animation state for those players here
+                    if (myPlayer.isLocalPlayer) //this only happens for the Player we control locally
+                    {
+                        myAnimState = STATE_WALK_LEFT;
+                    }
+                    else   //this happens for players that we can see, but that are controlled from somewhere else
+                    {
+                        myAnimState = STATE_WALK_RIGHT;
+                    }
+                    
 				}
 			}
             //and here we do things if the value of the z-part was higher
