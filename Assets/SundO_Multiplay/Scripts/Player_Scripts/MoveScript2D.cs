@@ -132,7 +132,18 @@ public class MoveScript2D : MonoBehaviour
     {
         //in order to calculate if and how much we have moved, 
         //we need to store our actual movement in space in the movementDirection variable in PlayerData
-        myPlayer.movementDirection = currentMovement.normalized;
+        //there is a bug in the code right now, 
+        //that flips the animation of other characters (those that we do not control locally)
+        //in order to fix it for now, we will flip the movement vector for those players
+
+        if (myPlayer.isLocalPlayer)
+        {
+            myPlayer.movementDirection = currentMovement.normalized;
+        }
+        else
+        {
+            myPlayer.movementDirection = -currentMovement.normalized;
+        }
     }
 }
      
