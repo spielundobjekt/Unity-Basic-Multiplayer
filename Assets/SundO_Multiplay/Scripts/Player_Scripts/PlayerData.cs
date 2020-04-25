@@ -11,6 +11,9 @@ using UnityEngine;
 
 public class PlayerData : Mirror.NetworkBehaviour
 {
+    public static PlayerData localPlayer;   //here we store our local client player, because we will need it to access it
+                                            //every once in a while, if we want to do things to objects
+
     public Vector3 movementDirection;       //here, we will store the Vector this player is moving in
     public Quaternion lookRotation;         //here we store the Rotation of the Player's gaze
 
@@ -25,7 +28,11 @@ public class PlayerData : Mirror.NetworkBehaviour
     [Mirror.SyncVar]
     public ClientState myState = ClientState.CS_INIT;
 
-    public bool bReadyToLoadSprites = false;
+    public Action currentAction;            //if we want to perform an Action in the world
+                                            //(as in: interacting with objects, that others can see)
+                                            //this will be the action we are currently performing
+
+    //public bool bReadyToLoadSprites = false;
 
     //We do some things in Awake() because this gets called before the Start() Script of anything else is called.
     //But here's the thing: our networking doesn't work in the Awake Function yet.
@@ -52,6 +59,7 @@ public class PlayerData : Mirror.NetworkBehaviour
         //first, only do this for the local Player, because they have access to the name the Player was given by the User
         if (isLocalPlayer)
         {
+            PlayerData.localPlayer = this;
             //get the name from the input box -
             characterName = CharacterUISetupBridge.localCharacterName;
             
@@ -63,7 +71,8 @@ public class PlayerData : Mirror.NetworkBehaviour
         }
         
     }
-        
+    
+    
     [Mirror.Command]
     void CmdSendDataToServer(string nameFromClient)
     {
@@ -82,6 +91,49 @@ public class PlayerData : Mirror.NetworkBehaviour
         GameData.instance.players.Remove(this);
     }
 
+    public void PerformAction(Action myAction)
+    {
+        //First, get Authority over the GameObject, so we can do things with it
+        //For that, we need to get its NetworkIdentity Component
+        Mirror.NetworkIdentity actionIdentity = myAction.GetComponent<Mirror.NetworkIdentity>();
+        
+        //then, we tell the server that we would like to get authority over it
+        CmdGetAuthority(actionIdentity);
 
+    }
+
+    public void ReleaseAuthority(Action myAction)
+    {
+        //First, get the NetworkID for the object we want to release Authority over
+        Mirror.NetworkIdentity actionIdentity = myAction.GetComponent<Mirror.NetworkIdentity>();
+
+        //then, we tell the server that we would like to get authority over it
+        CmdReleaseAuthority(actionIdentity);
+
+    }
+
+
+
+    [Mirror.Command]
+    public void CmdGetAuthority(Mirror.NetworkIdentity objectIdentity)
+    {
+        //Let the console know, that we received a command on the server
+        Debug.Log("Okay, Server received request to give authority to client to do things with this Object:" + objectIdentity.gameObject.name);
+
+        //remove other people's control over this object
+        objectIdentity.RemoveClientAuthority();
+        
+        //give this client control over this object
+        objectIdentity.AssignClientAuthority(base.connectionToClient);
+    }
+
+    [Mirror.Command]
+    public void CmdReleaseAuthority(Mirror.NetworkIdentity objectIdentity)
+    {
+        //Let the console know, that we received a command on the server
+        Debug.Log("Okay, Server received request to remove authority from client:" + objectIdentity.gameObject.name);
+        //give the client control over this object
+        objectIdentity.RemoveClientAuthority();
+    }
 
 }
