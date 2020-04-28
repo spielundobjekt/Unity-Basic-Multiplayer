@@ -61,9 +61,10 @@ public class MoveScript3D : MonoBehaviour
         //So they need to figure out if they have changed their position from the last frame to this frame 
         else
         {
-            currentMovement = oldLocation - transform.position;
-            oldLocation = transform.position;
         }
+
+        currentMovement = oldLocation - myPlayer.transform.position;
+        oldLocation = myPlayer.transform.position;
 
         //finally, make sure all relevant information is put into the PlayerData Object 
         //that all other scripts have access to (like the Animation Script).
