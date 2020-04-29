@@ -4724,9 +4724,9 @@ GameObject:
   m_Component:
   - component: {fileID: 439099919}
   - component: {fileID: 439099918}
-  - component: {fileID: 439099917}
   - component: {fileID: 439099915}
-  - component: {fileID: 439099920}
+  - component: {fileID: 439099917}
+  - component: {fileID: 439099916}
   m_Layer: 0
   m_Name: jukebox
   m_TagString: Untagged
@@ -4830,6 +4830,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &439099916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439099914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0176b1f0a7ee45948aa38d6dcc7beaab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!114 &439099917
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4842,7 +4856,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 1459799194
+  sceneId: 1510509661
   serverOnly: 0
   m_AssetId: 
 --- !u!212 &439099918
@@ -4910,20 +4924,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!114 &439099920
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 439099914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0176b1f0a7ee45948aa38d6dcc7beaab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
 --- !u!4 &441986897 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 458808, guid: 453e4490b09ecb249b6252852db616f9,
@@ -21166,7 +21166,7 @@ MonoBehaviour:
         m_MethodName: SetPerformedAction
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 439099920}
+          m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: Action, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0

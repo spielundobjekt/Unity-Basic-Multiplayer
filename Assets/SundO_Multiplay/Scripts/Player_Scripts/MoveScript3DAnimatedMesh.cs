@@ -62,16 +62,23 @@ public class MoveScript3DAnimatedMesh : MonoBehaviour
     }
 
     //--------------------------------------
+    //HERE THINGS HAVE CHANGED!!!!
     // FixedUpdate is called once per frame
     // it is more deterministic in its execution time and order than the regular "Update"
     // which is why it is often used for movement and Physics related things
     // here we describe in which order we process inputs and the move Objects
     // we do most things exatly the same as the other MoveScripts!
+    // We set our navMeshTarget to 0,0,0, so that the player only moves if there was an input!
     //--------------------------------------
     private void FixedUpdate()
     {
+        Debug.Log(transform.forward);
+
         //first, we make sure that we are not moving currently
         currentMovement = currentMovement * 0.0f;
+        
+        //Vector3.zero is just a lazy way of writing "new Vector3(0,0,0);"
+        navMeshTarget.transform.localPosition = Vector3.zero;
 
         //Only Process Movement from Input for the local Player, 
         //otherwise all player Objects would move!
@@ -102,9 +109,7 @@ public class MoveScript3DAnimatedMesh : MonoBehaviour
     //--------------------------------------
     void ProcessMovement()
     {
-        //Vector3.zero is just a lazy way of writing "new Vector3(0,0,0);"
-        navMeshTarget.transform.localPosition = Vector3.zero;
-
+        
         // Movement per input direction - relevant if input is Keyboard or Gamepad
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0 || Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
         {
@@ -194,16 +199,11 @@ public class MoveScript3DAnimatedMesh : MonoBehaviour
     //--------------------------------------
     void MoveCharacter()
     {
+        //In here, we will change the player's y-Rotation to match that one of the lookRotation!
+        myPlayer.transform.rotation = Quaternion.Euler(new Vector3(0, lookInput.y * lookSpeed, 0));
+
         //we calculate our position we want to move to similarly to our regular 3D movement:
-
-        //instead of moving our player in absolute values, we need to move it relative to where she is looking
-        //Unity (thankfully) gives us a Vector pointing in the direction we would describe as "forward"
-        // we can add a fraction of that vector to our current position to move forward
-        currentMovement = transform.forward * Time.deltaTime * movementInput.z;
-
-        //Similarly, Unity gives us a vector that points 90 degrees sideways (to the "right"). 
-        //we can add a fraction of this vector to our current position to move from side to side
-        currentMovement += transform.right * Time.deltaTime * movementInput.x;
+        currentMovement = movementInput * Time.deltaTime;
 
         //make sure that we never loose the ground beneath our feet!
         currentMovement.y = 0;
@@ -211,8 +211,7 @@ public class MoveScript3DAnimatedMesh : MonoBehaviour
         //but now, instead of moving our player directly, let's set use our navMeshTarget 
         //to the position she wants to move to!
 
-        //and now, after we did all of the movement, let's set the y-Value again to what it was before
-        navMeshTarget.transform.localPosition += currentMovement;
+        navMeshTarget.transform.localPosition = currentMovement;
 
         //also set our destination
         myNavMeshAgent.destination = navMeshTarget.transform.position;

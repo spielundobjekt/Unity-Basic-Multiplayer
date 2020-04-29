@@ -90,7 +90,9 @@ public class MoveScript3DBillboards : MonoBehaviour
     //--------------------------------------
     void ProcessMovement()
     {
-        
+
+
+        Debug.Log(transform.forward);
 
         // Movement per input direction - relevant if input is Keyboard or Gamepad
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0 || Input.GetAxis("Mouse X") !=0 || Input.GetAxis("Mouse Y") != 0)
@@ -176,17 +178,21 @@ public class MoveScript3DBillboards : MonoBehaviour
     //After we have figured out what the input wants us to do, 
     //we can now start actually moving our player Object
     //--------------------------------------
+
+    //BEWARE! There is a Script on this GameObject called "AlwaysFaceCamera" that will change our 
+    //rotation to always be in line with the camera's!
+    //This is important to understand why the following code works!
     void MoveCharacter()
     {
         
         //instead of moving our player in absolute values, we need to move it relative to where she is looking
         //Unity (thankfully) gives us a Vector pointing in the direction we would describe as "forward"
         // we can add a fraction of that vector to our current position to move forward
-        currentMovement = transform.forward * Time.deltaTime * movementInput.z;
+        currentMovement = transform.forward * Time.deltaTime * movementInput.z * moveSpeed;
 
         //Similarly, Unity gives us a vector that points 90 degrees sideways (to the "right"). 
         //we can add a fraction of this vector to our current position to move from side to side
-        currentMovement += transform.right * Time.deltaTime * movementInput.x;
+        currentMovement += transform.right * Time.deltaTime * movementInput.x * moveSpeed;
 
         //make sure that we never loose the ground beneath our feet!
         currentMovement.y = 0;

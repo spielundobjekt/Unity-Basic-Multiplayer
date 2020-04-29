@@ -486,6 +486,11 @@ PrefabInstance:
       propertyPath: navMeshTarget
       value: 
       objectReference: {fileID: 373755575401016075}
+    - target: {fileID: 8973299463510818148, guid: a3f5841be4a9fc34faea3b4004820e52,
+        type: 3}
+      propertyPath: lookSpeed
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1071866487994516394, guid: a3f5841be4a9fc34faea3b4004820e52, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a3f5841be4a9fc34faea3b4004820e52, type: 3}
