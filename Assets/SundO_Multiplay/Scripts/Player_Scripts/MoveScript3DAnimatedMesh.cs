@@ -1,51 +1,74 @@
-﻿using UnityEngine;
-using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-/// <summary>
-/// The Move Script Handles Movement in 3D for Players
-/// locally controlled through Mouse and Keyboard or the On-Screen UI 
-/// it also keeps track of whether or not the player has moved in the last frame 
-/// and updates the PlayerData Script accordingly
-/// </summary>
+using UnityEngine.AI;   //this thing is new! we need it to access all NavMesh related Components!
 
-public class MoveScript3D : MonoBehaviour
+//In this script, we use Unity's built in Movement and Path-finding System
+//to help us control our character.
+//because we use a lot of "Unity Stuff", our code will be much shorter, 
+//but many things will need to be set up in the Editor to make this work.
+//For more information on unity's system that we use here, see: https://docs.unity3d.com/Manual/Navigation.html
+
+public class MoveScript3DAnimatedMesh : MonoBehaviour
 {
-    public PlayerData myPlayer;         //a variable that references our PlayerData Script
-                                        //we use this Script to store and retrieve information about the player
-                                        //from a whole bunch of scripts
+    //Our player so far has managed to walk around using our Keyboard and mouse inputs.
+    //we will still be using those, but now extend our movement possibilities with some 
+    //Unity functionality
+    //One of these Unity Concepts is that of a NavMesh (see link above).
+    //In order for our NavMesh functionality to work, our Player will need some components added to her Gameobject.
+    //and we will need some extra objects to manipulate, where she is going. 
 
-    public float moveSpeed = 1.0f;      //a factor for modifying the Movement Value we get from Input devices
-    public float lookSpeed = 3.0f;      //a factor for modifying the Rotational speed we get from Input devices
+    public PlayerData myPlayer;            //a link to our PlayerData Script - we don't need to set this public btw.
+    public GameObject navMeshTarget;        //The Player should always navigate to this target 
+                                           //we connect to this Gameobject in the Editor!
+                                           
+    public NavMeshAgent myNavMeshAgent;           //we need a connection to this, because we want to change its destination
 
-    public Vector3 currentMovement;     //this variable contains the amount of units we have moved, no matter if we are a local Player or a networked player
-    
-    public Vector3 oldLocation;         //we use this to figure out if we have moved during the last frame. 
-                                        //this is useful if we do not control this Player from our local inputs,
-                                        
-    public Vector2 lookInput;           //here we store the info we get from the mouse, to look around
-    public Vector3 movementInput;       //here, we store the information we get from the keyboard and/or gamepad
+    public float agentAngularSpeed = 1440;      //this is the angular turn rate we want to apply to our NavMeshAgent
+    public float moveSpeed = 1;                 //this is our Agent's moveSpeed
+
+    public float lookSpeed = 3.0f;              //a factor for modifying the Rotational speed we get from Input devices
+
+    public Vector3 currentMovement;             //this variable contains the amount of units we have moved, no matter if we are a local Player or a networked player
+
+    public Vector3 oldLocation;                 //we use this to figure out if we have moved during the last frame. 
+                                                //this is useful if we do not control this Player from our local inputs,
+
+    public Vector2 lookInput;                   //here we store the info we get from the mouse, to look around
+    public Vector3 movementInput;               //here, we store the information we get from the keyboard and/or gamepad
 
 
 
     //--------------------------------------
-    // We use Start() to find the references for a lot of our Variables
-    // If we do it this way, we don't have to rely on connecting things in the editor that much.
+    //We connect things, as we usually do, 
+    //but also create a NavMeshAgent Component for our Player
     //--------------------------------------
-    void Start()
+    private void Start()
     {
-        //connect to PlayerData
-        myPlayer = GetComponentInParent<PlayerData>();        
+        myPlayer = GetComponentInParent<PlayerData>();
+
+        //instead of linking to an already existing Component, let's create one and link to it afterwards!
+        //Remember, we are not creating a component in the PlayerData Script, 
+        //but in the Gameobject that holds the Playerdatascript!
+        myNavMeshAgent = myPlayer.gameObject.AddComponent<NavMeshAgent>();
+        
+        //now that we have created a new NavMeshAgent, we should set up some values, 
+        //to make it work better in our context
+        //Remember: we have created this Component in the same GameObject that PlayerData is in!
+        myNavMeshAgent.angularSpeed = agentAngularSpeed;
+        myNavMeshAgent.speed = moveSpeed;
+
     }
 
     //--------------------------------------
     // FixedUpdate is called once per frame
     // it is more deterministic in its execution time and order than the regular "Update"
     // which is why it is often used for movement and Physics related things
-    // here we describe in which order we process inputs and the move Objectss
+    // here we describe in which order we process inputs and the move Objects
+    // we do most things exatly the same as the other MoveScripts!
     //--------------------------------------
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         //first, we make sure that we are not moving currently
         currentMovement = currentMovement * 0.0f;
@@ -55,45 +78,35 @@ public class MoveScript3D : MonoBehaviour
         if (myPlayer.isLocalPlayer)
         {
             ProcessMovement();
-            
+
         }
         //All other Player Objects still need to animate! 
         //So they need to figure out if they have changed their position from the last frame to this frame 
         else
         {
+            currentMovement = oldLocation - myPlayer.transform.position;
+            oldLocation = myPlayer.transform.position;
         }
-
-        currentMovement = oldLocation - myPlayer.transform.position;
-        oldLocation = myPlayer.transform.position;
 
         //finally, make sure all relevant information is put into the PlayerData Object 
         //that all other scripts have access to (like the Animation Script).
         UpdatePlayerData();
     }
 
-
-
-    //------------------------------------------------------------------------------------------------------------------------
-    // I personally like to first read Start() and Update() so that I can get an idea of what this Script is doing
-    // then i can delve deeper and figure out how individual functions work.
-    // For your own code, it is good practice to keep Start() and Update() as readable as possible! 
-    //
-    // If I have time (and I don't always do), I try to order the function in the same order that they are called in.
-    //------------------------------------------------------------------------------------------------------------------------
-
-
-
-
     //--------------------------------------
+    //HERE THINGS HAVE CHANGED!!!!
     //We find out which input type the player has used
     //Only Local Player Processes Movement Inputs via Keyboard, Mouse, or On-Screen UI!
+    // there is something different here though! 
+    //We set our navMeshTarget to 0,0,0, so that the player only moves if there was an input!
     //--------------------------------------
     void ProcessMovement()
     {
-        
+        //Vector3.zero is just a lazy way of writing "new Vector3(0,0,0);"
+        navMeshTarget.transform.localPosition = Vector3.zero;
 
         // Movement per input direction - relevant if input is Keyboard or Gamepad
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0 || Input.GetAxis("Mouse X") !=0 || Input.GetAxis("Mouse Y") != 0)
+        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0 || Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
         {
             ProcessDeviceInput();
         }
@@ -105,7 +118,7 @@ public class MoveScript3D : MonoBehaviour
 
         //after figuring out the inputs, let's move the character
         //Attention! This also only gets called for the local player!
-        MoveCharacter();             
+        MoveCharacter();
     }
 
     //--------------------------------------
@@ -173,12 +186,16 @@ public class MoveScript3D : MonoBehaviour
     }
 
     //--------------------------------------
+    //HERE THINGS HAVE CHANGED!!!!
     //After we have figured out what the input wants us to do, 
     //we can now start actually moving our player Object
+    //in this specific case, we want to move our player using Unity's NavMesh Concept!
+    //so our movement is a bit different!
     //--------------------------------------
     void MoveCharacter()
     {
-        
+        //we calculate our position we want to move to similarly to our regular 3D movement:
+
         //instead of moving our player in absolute values, we need to move it relative to where she is looking
         //Unity (thankfully) gives us a Vector pointing in the direction we would describe as "forward"
         // we can add a fraction of that vector to our current position to move forward
@@ -191,8 +208,14 @@ public class MoveScript3D : MonoBehaviour
         //make sure that we never loose the ground beneath our feet!
         currentMovement.y = 0;
 
+        //but now, instead of moving our player directly, let's set use our navMeshTarget 
+        //to the position she wants to move to!
+
         //and now, after we did all of the movement, let's set the y-Value again to what it was before
-        myPlayer.transform.position += currentMovement;
+        navMeshTarget.transform.localPosition += currentMovement;
+
+        //also set our destination
+        myNavMeshAgent.destination = navMeshTarget.transform.position;
 
     }
 
@@ -208,5 +231,8 @@ public class MoveScript3D : MonoBehaviour
         //we need to store our actual movement in space in the movementDirection variable in PlayerData
         myPlayer.movementDirection = currentMovement.normalized;
     }
+
+
+
+
 }
-     

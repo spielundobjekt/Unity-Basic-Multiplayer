@@ -36,7 +36,7 @@ public class MoveScript2D : MonoBehaviour
     // FixedUpdate is called once per frame
     // it is more deterministic in its execution time and order than the regular "Update"
     // which is why it is often used for movement and Physics related things
-    // here we describe in which order we process inputs and the move Objectss
+    // here we describe in which order we process inputs and the move Objects
     //--------------------------------------
     void FixedUpdate()
     {
