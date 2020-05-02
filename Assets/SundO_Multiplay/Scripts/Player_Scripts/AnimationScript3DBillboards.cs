@@ -164,7 +164,7 @@ public class AnimationScript3DBillboards : MonoBehaviour
     public void GenerateTextureFromFile(){
 
         //load Data from the Resources Folder into a Texture (see http://hyperdramatik.net/mediawiki/index.php?title=GlossarCG#Textur )
-        Texture2D charImage = Resources.Load("Characters/" + myPlayer.characterName + "_character") as Texture2D;
+        Texture2D charImage = Resources.Load(characterFolderName + "/Characters/" + myPlayer.characterName + "_character") as Texture2D;
 
         //Let's check if loading actually worked
         if (!charImage)

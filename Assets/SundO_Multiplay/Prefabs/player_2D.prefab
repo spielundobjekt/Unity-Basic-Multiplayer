@@ -89,7 +89,7 @@ MonoBehaviour:
   lookRotation: {x: 0, y: 0, z: 0, w: 0}
   characterName: friedrich
   myState: 0
-  bReadyToLoadSprites: 0
+  currentAction: {fileID: 0}
 --- !u!114 &-1413149422819813009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -421,6 +421,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 441900}
     m_Modifications:
+    - target: {fileID: 2887601679163957789, guid: 87ea84b8e1c45ab41ad77bcfdd9db9ec,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 3892255258558237117, guid: 87ea84b8e1c45ab41ad77bcfdd9db9ec,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5799062691120547303, guid: 87ea84b8e1c45ab41ad77bcfdd9db9ec,
         type: 3}
       propertyPath: m_LocalPosition.x

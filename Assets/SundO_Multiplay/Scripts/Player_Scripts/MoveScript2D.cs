@@ -4,101 +4,34 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-//The Move Script Handles Movement in 2D for Players
-//locally controlled through Keyboard or the On-Screen UI 
-//it also keeps track of whether or not the player has moved in the last frame 
-//and updates the PlayerData Script accordingly
+// This Move Script Handles Movement in 2D for Players
+// It is derived from MoveScriptBase - please check that one out,
+// because it handles the underlying decision structure on when these functions get called
 
-public class MoveScript2D : MonoBehaviour
+public class MoveScript2D : MoveScriptBase
 {
-    public PlayerData myPlayer;         //a variable that references our PlayerData Script
-                                        //we use this Script to store and retrieve information about the player
-                                        //from a whole bunch of scripts
-
-    public float moveSpeed = 1.0f;      //a factor for modifying the Movement Value we get from Input devices
-
-    public Vector3 currentMovement;     //this variable contains the amount of units we have moved, no matter if we are a local Player or a networked player
-
-    public Vector3 oldLocation;         //we use this to figure out if we have moved during the last frame. 
-                                        //this is useful if we do not control this Player from our local inputs,
-
 
     //--------------------------------------
-    // We use Start() to find the references for a lot of our Variables
-    // If we do it this way, we don't have to rely on connecting things in the editor that much.
+    //We find out if the player used a device for Input
     //--------------------------------------
-    void Start()
-    {
-        myPlayer = GetComponentInParent<PlayerData>();
-    }
-
-    //--------------------------------------
-    // FixedUpdate is called once per frame
-    // it is more deterministic in its execution time and order than the regular "Update"
-    // which is why it is often used for movement and Physics related things
-    // here we describe in which order we process inputs and the move Objects
-    //--------------------------------------
-    void FixedUpdate()
-    {
-        //first, we make sure that we are not moving currently
-        currentMovement = currentMovement * 0.0f;
-
-        //Only Process Movement from Input for the local Player, 
-        //otherwise all player Objects would move!
-        if (myPlayer.isLocalPlayer)
-        {
-            ProcessMovement();
-            
-        }
-        //All other Player Objects still need to animate! 
-        //So they need to figure out if they have changed their position from the last frame to this frame 
-        else
-        {
-            currentMovement = oldLocation - myPlayer.transform.position;
-            oldLocation = myPlayer.transform.position;
-        }
-
-        //finally, make sure all relevant information is put into the PlayerData Object 
-        //that all other scripts have access to (like the Animation Script).
-        UpdatePlayerData();
-    }
-
-
-    //------------------------------------------------------------------------------------------------------------------------
-    // I personally like to first read Start() and Update() so that I can get an idea of what this Script is doing
-    // then i can delve deeper and figure out how individual functions work.
-    // For your own code, it is good practice to keep Start() and Update() as readable as possible! 
-    //
-    // If I have time (and I don't always do), I try to order the function in the same order that they are called in.
-    //------------------------------------------------------------------------------------------------------------------------
-
-
-    //--------------------------------------
-    //We find out which input type the player has used
-    //Only Local Player Processes Movement Inputs via Keyboard, Mouse, or On-Screen UI!
-    //--------------------------------------
-    void ProcessMovement()
+    public override bool CheckForDeviceInput()
     {
         // Movement per input direction - Keyboard or Gamepad
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
         {
-            ProcessDeviceInput();
+            return true;
         }
         //Movement via On-Screen-Interface (Web and Cellphone)
         else
         {
-            ProcessUIInput();
+            return false;
         }
-
-        //after figuring out the inputs, let's move the character
-        //Attention! This also only gets called for the local player!
-        MoveCharacter();             
     }
 
     //--------------------------------------
     //Here we process Input for Keyboard and maybe Gamepad
     //--------------------------------------
-    void ProcessDeviceInput()
+    public override void ProcessDeviceInput()
     {
         currentMovement = new Vector3( moveSpeed * Input.GetAxis("Horizontal"), 0.0f, moveSpeed * Input.GetAxis("Vertical"));
     }
@@ -107,8 +40,9 @@ public class MoveScript2D : MonoBehaviour
     //--------------------------------------
     //Here we process movement if player moves via on-screen-interface
     //--------------------------------------
-    public void ProcessUIInput()
+    public override void ProcessUIInput()
     {
+        //we know that PlayerUIBridge.uiMov has the values we need for UI-Interface Movement
         currentMovement = moveSpeed * PlayerUIBridge.uiMov;
     }
 
@@ -116,7 +50,7 @@ public class MoveScript2D : MonoBehaviour
     //After we have figured out what the input wants us to do, 
     //we can now start actually moving our player Object
     //--------------------------------------
-    void MoveCharacter()
+    public override void MoveCharacter()
     {
         //make sure that we don't move the transform of our own GameObject, 
         //but the Transform of the GameObject containing the PlayerData Script
@@ -128,11 +62,10 @@ public class MoveScript2D : MonoBehaviour
     //it is important to update all movement related Data in the PlayerData Script,
     //so all other scripts can access it and work with it
     //--------------------------------------
-    void UpdatePlayerData()
+    public override void UpdatePlayerData()
     {
-        //in order to calculate if and how much we have moved, 
-        //we need to store our actual movement in space in the movementDirection variable in PlayerData
-        //there is a bug in the code right now, 
+        
+        //There seems to be a bug in the code right now, 
         //that flips the animation of other characters (those that we do not control locally)
         //in order to fix it for now, we will flip the movement vector for those players
 

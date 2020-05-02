@@ -146,6 +146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049cad788b42ff84c92cd6e1107e2ea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterFolderName: SundO_Multiplay
   idleAnim: []
   walkLeftRightAnim: []
   walkDownAnim: []
@@ -210,7 +211,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7952226337534997977}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.1, z: 0.1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0.1}
   m_LocalScale: {x: 6, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 5799062691120547303}

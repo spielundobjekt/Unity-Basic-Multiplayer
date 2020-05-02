@@ -2824,7 +2824,7 @@ PrefabInstance:
     - target: {fileID: 6855372005914065368, guid: 15aba0e05afff6d41bb03740681b1cad,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6855372005914065368, guid: 15aba0e05afff6d41bb03740681b1cad,
         type: 3}
@@ -2934,7 +2934,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &561718531
 PrefabInstance:
@@ -4322,10 +4322,9 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1727919276}
+  m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &836497988
 PrefabInstance:
@@ -4747,7 +4746,7 @@ PrefabInstance:
     - target: {fileID: 7766437755408498195, guid: d59cd381736bd1e4d93ce6eca5139558,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7766437755408498195, guid: d59cd381736bd1e4d93ce6eca5139558,
         type: 3}
@@ -5282,7 +5281,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &987268942 stripped
 Transform:
@@ -7561,7 +7560,7 @@ Transform:
   - {fileID: 1553671878}
   - {fileID: 472652484}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1384717583
 PrefabInstance:
@@ -7680,7 +7679,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1389341726
 BoxCollider2D:
@@ -9753,6 +9752,8 @@ MonoBehaviour:
   transport: {fileID: 1727919278}
   networkAddress: localhost
   maxConnections: 1000
+  disconnectInactiveConnections: 0
+  serverIdleTimeout: 60
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 129696, guid: 6c8f742c73a5b6248bf33d8f3f984c25, type: 3}
   autoCreatePlayer: 1
@@ -9769,7 +9770,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 803567192}
+  m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1727919277
