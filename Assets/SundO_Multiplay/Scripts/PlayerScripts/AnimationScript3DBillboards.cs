@@ -163,14 +163,24 @@ public class AnimationScript3DBillboards : MonoBehaviour
     //--------------------------------------
     public void GenerateTextureFromFile(){
 
+        Debug.Log("Loading Sprites on Client Device...");
+
+        //set up a boolean to remember if we had to load a generic guest texture
+        bool bGuest = false;
+
         //load Data from the Resources Folder into a Texture (see http://hyperdramatik.net/mediawiki/index.php?title=GlossarCG#Textur )
         Texture2D charImage = Resources.Load(characterFolderName + "/Characters/" + myPlayer.characterName + "_character") as Texture2D;
 
         //Let's check if loading actually worked
         if (!charImage)
         {
-            Debug.Log("Loading failed! Maybe Character does not exist?");
+            Debug.Log("Loading failed! Maybe Character does not exist?");   
+            //if it didn't, load a generic guest sprite instead
+            charImage = LoadGuestSprite();
+            //and remember that we are now in guest mode, so we can give the sprite a funky color later on
+            bGuest = true;
         }
+    
 
         //this here makes sure that our images are drawn crisp and not mushy
         charImage.filterMode = FilterMode.Point;
@@ -215,12 +225,40 @@ public class AnimationScript3DBillboards : MonoBehaviour
         //we do not care about flipping right now, we can do this later.
         myMeshRenderer.material.mainTextureScale = new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
 
-        //finally, we will now set our Material in the Meshrenderer to use our Texture
-
+        
+        //we will now set our Material in the Meshrenderer to use our Texture
         myMeshRenderer.material.mainTexture = charImage;
 
-	}
+        //make color of our Sprite fancy if we are a guest, so all guests have different color
+        if (bGuest)
+        {
+            //create a color that has at least 0.25 (of 1) brightness in each color channel, and randomize the rest of the color
+            Color guestColor = new Color(0.25f + UnityEngine.Random.Range(0.0f, 0.75f), 0.25f + UnityEngine.Random.Range(0.0f, 0.75f), 0.25f + UnityEngine.Random.Range(0.0f, 0.75f), 1.0f);
 
+            //then apply this color to our SpriteRenderer
+            myMeshRenderer.material.SetColor("_Color", guestColor);
+        }
+
+
+        //finally, set the info text
+        //we do this here, to make sure that all Clients have their name set on all Computers!
+        myPlayer.GetComponentInChildren<TMPro.TextMeshPro>().text = myPlayer.characterName;
+
+    }
+
+    //--------------------------------------
+    // This gets called if we couldn't find a sprite with the name given by the Player
+    // we tried really hard to find it!
+    // but instead of having them appear as a box, let's give them a generic body
+    // and at least some funky Color!
+    //--------------------------------------
+    public Texture2D LoadGuestSprite()
+    {
+        //First load our generic guest sprite
+        Texture2D guestSprite = Resources.Load(characterFolderName + "/Characters/guest_character") as Texture2D;
+
+        return guestSprite;
+    }
 
     //--------------------------------------
     // Figure out which Image of the Animation Sequence to show

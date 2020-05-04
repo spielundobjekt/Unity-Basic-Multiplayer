@@ -45,11 +45,6 @@ public class PlayerData : Mirror.NetworkBehaviour
 
         //Let's let the GameData Script know that we exist!
         GameData.instance.players.Add(this);
-
-        //initialize our characterName, so there is something to load even if nothing has been put into the name field
-        characterName = "friedrich";
-
-        //GetComponent<Mirror.NetworkIdentity>().au
     }
 
     //All Networking stuff needs to be called in Start (and all functions onwards)
@@ -59,6 +54,7 @@ public class PlayerData : Mirror.NetworkBehaviour
         //first, only do this for the local Player, because they have access to the name the Player was given by the User
         if (isLocalPlayer)
         {
+            //set this Object as our Reference for all Scripts accessing PlayerData.localPlayer
             PlayerData.localPlayer = this;
             //get the name from the input box -
             characterName = CharacterUISetupBridge.localCharacterName;
@@ -102,6 +98,8 @@ public class PlayerData : Mirror.NetworkBehaviour
 
     }
 
+    //this gets called on the Client, 
+    //it then calls the Command on the Server
     public void ReleaseAuthority(Action myAction)
     {
         //First, get the NetworkID for the object we want to release Authority over
