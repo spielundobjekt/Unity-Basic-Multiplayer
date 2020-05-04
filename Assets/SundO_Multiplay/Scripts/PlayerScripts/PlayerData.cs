@@ -32,6 +32,12 @@ public class PlayerData : Mirror.NetworkBehaviour
                                             //(as in: interacting with objects, that others can see)
                                             //this will be the action we are currently performing
 
+    [Mirror.SyncVar]
+    public string talk;                     //the string we use to show what we are talking about
+
+    public TMPro.TextMeshProUGUI speechbubble;  //a connection to the speechbubble
+
+
     //public bool bReadyToLoadSprites = false;
 
     //We do some things in Awake() because this gets called before the Start() Script of anything else is called.
@@ -62,15 +68,16 @@ public class PlayerData : Mirror.NetworkBehaviour
             Debug.Log("CharacterName: " + characterName);
 
             //set the character name on the server as well...
-            CmdSendDataToServer(characterName);
+            CmdSendNameToServer(characterName);
             myState = ClientState.CS_HASDATA;            
         }
         
+
     }
     
     
     [Mirror.Command]
-    void CmdSendDataToServer(string nameFromClient)
+    void CmdSendNameToServer(string nameFromClient)
     {
         characterName = nameFromClient;
         myState = ClientState.CS_HASDATA;
@@ -97,6 +104,27 @@ public class PlayerData : Mirror.NetworkBehaviour
         CmdGetAuthority(actionIdentity);
 
     }
+
+    //we need to have this function here, because it handles things about our local Player
+    public void Say()
+    {
+        CmdSendTalkToServer(talk);
+    }
+
+
+    [Mirror.Command]
+    public void CmdSendTalkToServer(string clientTalk)
+    {
+        talk = clientTalk;
+        RpcShowTalk(talk);
+    }
+
+    [Mirror.ClientRpc]
+    public void RpcShowTalk(string myTalk)
+    {
+        speechbubble.text = myTalk;
+    }
+
 
     //this gets called on the Client, 
     //it then calls the Command on the Server

@@ -8,6 +8,9 @@ using UnityEngine;
 
 public class Action : Mirror.NetworkBehaviour
 {
+    //this is a generic variable that can be set if you want to move strings to all clients
+    //we use it for ActionSay, but it can be useful for a whole bunch of other actions
+    public string textToReplicate;
 
     //this function gets called automatically, the moment the client has control over the object
     //We get the authority from our PlayerData Script
@@ -16,7 +19,7 @@ public class Action : Mirror.NetworkBehaviour
         base.OnStartAuthority();
         Debug.Log("successfully gained Authority over this object!");
         
-        CmdReplicateOnOtherClients(GetComponent<Mirror.NetworkIdentity>());
+        CmdReplicateOnOtherClients(GetComponent<Mirror.NetworkIdentity>(), textToReplicate);
     }
 
     
@@ -34,18 +37,22 @@ public class Action : Mirror.NetworkBehaviour
     //that all other connected computers should also do the thing!
 
     [Mirror.Command]
-    void CmdReplicateOnOtherClients(Mirror.NetworkIdentity objectNetworkID)
+    void CmdReplicateOnOtherClients(Mirror.NetworkIdentity objectNetworkID, string textSentToServer)
     {
-        //call PerformAction on all the Computers!
-        RpcPerformAction();
+        //set the content of this string on the Erver to what we got from the client who triggered this action
+        textToReplicate = textSentToServer;
+
+        //call PerformAction on all the Computers, and set the text we got to everyone else!
+        RpcPerformAction(textToReplicate);
 
         //give Authority back to the Server, because we have done what we needed
         objectNetworkID.RemoveClientAuthority();
     }
 
     [Mirror.ClientRpc]
-    public void RpcPerformAction()
+    public void RpcPerformAction(string textFromClient)
     {
+        textToReplicate = textFromClient;
         PerformAction();
     }
 
