@@ -38,6 +38,9 @@ public class GameData : MonoBehaviour
 
     public List<PlayerData> players;            //a list with all PlayerDataObjects in the Game right now
 
+    public Mirror.NetworkManager netManager;    //a reference to the Network Component on the same GameObject
+
+    public bool bShowGUIOnConnect = true;       //a bool that lets us decide to show the Network GUI on the top left after we connected
 
     //Here we set the static variable to the instance of this script
     //This is part of the Pattern described above.
@@ -45,6 +48,28 @@ public class GameData : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        netManager = GetComponent<Mirror.NetworkManager>();
     }
+
+    public void StartHostAndClient()
+    {
+        netManager.StartHost();
+
+        if (bShowGUIOnConnect)
+        {
+            GetComponent<Mirror.NetworkManagerHUD>().showGUI = true;
+        }
+    }
+
+    public void StartClient()
+    {
+        netManager.StartClient();
+
+        if (bShowGUIOnConnect)
+        {
+            GetComponent<Mirror.NetworkManagerHUD>().showGUI = true;
+        }
+    }
+
 
 }
