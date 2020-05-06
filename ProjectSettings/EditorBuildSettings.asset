@@ -14,7 +14,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/SundO_Multiplay/Example_Scenes/3d-Billboards-multiplayer.unity
     guid: b75849e10c01aa346b01790dc03fed59
-  - enabled: 1
+  - enabled: 0
     path: Assets/SundO_Multiplay/Example_Scenes/2d_multiplayer.unity
     guid: 8c98c522962533c4c8f52b6299baf1ff
+  - enabled: 1
+    path: Assets/ONLIVE/ONLIVE_multiplayer.unity
+    guid: 47ae9fb5bdb96554d8ce8b9fe795844b
   m_configObjects: {}

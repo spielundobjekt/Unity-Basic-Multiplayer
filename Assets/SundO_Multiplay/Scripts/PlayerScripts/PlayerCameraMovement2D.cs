@@ -44,6 +44,7 @@ public class PlayerCameraMovement2D : MonoBehaviour
 
         //now let's move the camera a little bit in that direction.
         //let's say, depending on the lazyness, we only move a fraction of the actual distance.
-        GameData.instance.mainCamera.transform.Translate(1.0f/cameraLazyness * cameraMoveDirection);
+        //we also have to make this dependent on Time.deltaTime, so it doesn't change on people's computers!
+        GameData.instance.mainCamera.transform.Translate(1.0f/cameraLazyness * cameraMoveDirection * Time.deltaTime * 100.0f);
     }
 }
