@@ -1,3 +1,9 @@
+=========================================================================
+IMPORTANT!
+To use this project, please first create a NEW PROJECT in Unity 2019.3.10,
+then copy the contents of this archive into the newly created project.
+=========================================================================
+
 This is a repo in Progress for a Basic Multiplayer setup, 2D, 3D with Billboards, and 3D
 using Unity 2019.3.10f1 (at the time of writing).          
 

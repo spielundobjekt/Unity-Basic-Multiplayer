@@ -42,8 +42,12 @@ public class CharacterUISetupBridge : MonoBehaviour
             }
         }
 
-        //set our PlayerGUI to visible
-        activePlayerGUI.SetActive(true);
+        if (activePlayerGUI)
+        {
+            //set our PlayerGUI to visible
+            activePlayerGUI.SetActive(true);
+        }
+        
 
         //set our gameobject to inactive
         this.gameObject.SetActive(false);

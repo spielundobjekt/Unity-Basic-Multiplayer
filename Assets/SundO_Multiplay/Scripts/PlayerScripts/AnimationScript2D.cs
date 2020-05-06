@@ -94,8 +94,9 @@ public class AnimationScript2D : MonoBehaviour
         //find the TextMesh, so we can write things to it.
         infoText = GetComponentInChildren<TextMesh> ();
                 
+        //let's not do this. Rather, do this rotation in the Editor, for the Representation2D Object!
         //In order to show our Sprites in 2D view, we must make sure our SpriteRenderer is Facing upwards
-        transform.rotation = Quaternion.Euler(new Vector3(90,0,0));
+        //transform.rotation = Quaternion.Euler(new Vector3(90,0,0));
 
         //since we do not know exactly when we can start loading our image data
         //(our character name might not be set up yet, because we receive that info from the server)
