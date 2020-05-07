@@ -6,6 +6,6 @@ public class TileData : MonoBehaviour
 {
     public bool bWalkable = false;
     public bool bInteractable = false;
-    public Action tileAction;
+    public ActionBase tileAction;
      
 }

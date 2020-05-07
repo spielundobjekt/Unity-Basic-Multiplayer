@@ -7,7 +7,7 @@ using UnityEngine;
 
 //In this example, we are starting or stopping an audio file
 
-public class ActionPlayAudio : Action       //make sure you derive from the Action Base Class
+public class ActionPlayAudio : ActionBase       //make sure you derive from the Action Base Class
 {   
     //I am testing Notes in the Inspector...
     [TextArea]

@@ -6,7 +6,7 @@ using UnityEngine;
 //to create your own actions.
 // To do this, you just write an Action class, like ActionPlayAudio, and instead of Monobehaviour, you write Action
 
-public class Action : Mirror.NetworkBehaviour
+public class ActionBase : Mirror.NetworkBehaviour
 {
     //this is a generic variable that can be set if you want to move strings to all clients
     //we use it for ActionSay, but it can be useful for a whole bunch of other actions

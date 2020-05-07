@@ -28,7 +28,7 @@ public class PlayerData : Mirror.NetworkBehaviour
     [Mirror.SyncVar]
     public ClientState myState = ClientState.CS_INIT;
 
-    public Action currentAction;            //if we want to perform an Action in the world
+    public ActionBase currentAction;            //if we want to perform an Action in the world
                                             //(as in: interacting with objects, that others can see)
                                             //this will be the action we are currently performing
 
@@ -94,7 +94,7 @@ public class PlayerData : Mirror.NetworkBehaviour
         GameData.instance.players.Remove(this);
     }
 
-    public void PerformAction(Action myAction)
+    public void PerformAction(ActionBase myAction)
     {
         //First, get Authority over the GameObject, so we can do things with it
         //For that, we need to get its NetworkIdentity Component
@@ -128,7 +128,7 @@ public class PlayerData : Mirror.NetworkBehaviour
 
     //this gets called on the Client, 
     //it then calls the Command on the Server
-    public void ReleaseAuthority(Action myAction)
+    public void ReleaseAuthority(ActionBase myAction)
     {
         //First, get the NetworkID for the object we want to release Authority over
         Mirror.NetworkIdentity actionIdentity = myAction.GetComponent<Mirror.NetworkIdentity>();

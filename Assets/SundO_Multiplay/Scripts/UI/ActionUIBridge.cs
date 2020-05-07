@@ -9,7 +9,7 @@ public class ActionUIBridge : MonoBehaviour
     // this is the function that all Buttons 
     // and other UI Elements can call
     //--------------------------------------
-    public void SetPerformedAction(Action thisAction)
+    public void SetPerformedAction(ActionBase thisAction)
     {
         Debug.Log("An Action wants to be executed!");
         PlayerData.localPlayer.PerformAction(thisAction);
