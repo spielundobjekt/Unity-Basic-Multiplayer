@@ -13,6 +13,8 @@ _Or:
 ==============
 
 For the 3DAnimated Mesh Example, you need to download David O'Reilly's 3D Characters from Itch.io:
+
+
 https://davidoreilly.itch.io/external-world-characters
 
 This is a repo in Progress for a Basic Multiplayer setup, 2D, 3D with Billboards, and 3D
