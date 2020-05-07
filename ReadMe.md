@@ -3,13 +3,11 @@ IMPORTANT!
 To use this project,you need to...
 
 
-_Either:  * install the GITHUB Plugin for Unity and check out the dev branch from this repository into a newly created Unity Project
+* install the GITHUB Plugin for Unity and check out the dev branch from this repository into a newly created Unity Project
 
 
-_Or:
-- Create a new Unity Project (Version 2019.3.10)
-- Install the latest Mirror Release from https://github.com/vis2k/Mirror/releases (Download the Unitypackage and double click to import into your project)
-- copy the "Resources" and "SundO_Multiplay" Folder into your Assets Folder in your unity project
+until the time I figure out hosting LFS files here...
+
 ==============
 
 For the 3DAnimated Mesh Example, you need to download David O'Reilly's 3D Characters from Itch.io:
