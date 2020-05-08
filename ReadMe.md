@@ -19,7 +19,7 @@ from MA Spiel und Objekt at HfS Ernst Busch Berlin
 -----------
 
 For Skeletal Animation:
-You will have to have these downloaded and placed in your Project's Assets Folder for the skeletal Animation to work:
+You will have to download David O'Reilly's Characters from itch.io and placed in your Project's Assets Folder for the skeletal Animation to work:
 * https://davidoreilly.itch.io/external-world-characters
 
 You also need to change the Import settings on the characters in the "UnityExample->Characters" folder to "Animation Type->Humanoid" 
