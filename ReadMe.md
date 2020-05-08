@@ -5,10 +5,9 @@ To use this project,you need to...
 
 * install the GITHUB Plugin for Unity and check out the dev branch from this repository into a newly created Unity Project
 
+* or click on the "Releases" tab in the navigation bar above to download all files (detailed installation instructions are in the release
 
-until the time I figure out hosting LFS files here...
-
-==============
+-----------
 
 For the 3DAnimated Mesh Example, you need to download David O'Reilly's 3D Characters from Itch.io:
 
