@@ -8,6 +8,11 @@ using UnityEngine;
 
 public class ActionBase : Mirror.NetworkBehaviour
 {
+    //we use this to determine if we want our Action to execute on all Client devices
+    //or just on our local machine.
+    //setting this to false can be useful for triggering videos or audio individually
+    public bool bReplicateOnClients = true;
+
     //this is a generic variable that can be set if you want to move strings to all clients
     //we use it for ActionSay, but it can be useful for a whole bunch of other actions
     public string textToReplicate;
@@ -43,7 +48,10 @@ public class ActionBase : Mirror.NetworkBehaviour
         textToReplicate = textSentToServer;
 
         //call PerformAction on all the Computers, and set the text we got to everyone else!
-        RpcPerformAction(textToReplicate);
+        if (bReplicateOnClients)
+        {
+            RpcPerformAction(textToReplicate);
+        }
 
         //give Authority back to the Server, because we have done what we needed
         objectNetworkID.RemoveClientAuthority();
