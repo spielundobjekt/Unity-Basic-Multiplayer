@@ -10,14 +10,11 @@
 [Aa]ssets/K4A.meta
 [Aa]ssets/Plugins
 [Aa]ssets/Plugins.meta
-[Ss]treamingAssets
-[Ss]treamingAssets.meta
 
 #individual Project Folder:
 [Aa]ssets/ONLIVE
 [Aa]ssets/ONLIVE.meta
-[Aa]ssets/WebGLTemplates
-[Aa]ssets/WebGLTemplates.meta
+
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # [Aa]ssets/AssetStoreTools*
