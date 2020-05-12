@@ -1,0 +1,18 @@
+-----------------------------------------------------
+What to do with these Files?
+
+Best to start by opening up an Example Scene from the Example Scenes Folder
+------------------------------------------------------
+
+-----------------------------------------------------
+Can I use this in my own Project?
+
+Yes! You totally can! It is usually good practice to not change any of the files in this folder, but rather make a copy of, let's say, a Scene, a Prefab or a Script you want to use as a starting point and work from there.
+-----------------------------------------------------
+
+-----------------------------------------------------
+I want to understand how this works. Where do I look?
+
+We provide some explanation for most Gameobjects directly in the Editor. If you are interested in the Code, a good starting Point is "PlayerData.cs" and having a look at the player_2D Prefab, to see how things connect.
+For a somewhat complex example, you can have a look at the FOYER Example Scene.
+-----------------------------------------------------

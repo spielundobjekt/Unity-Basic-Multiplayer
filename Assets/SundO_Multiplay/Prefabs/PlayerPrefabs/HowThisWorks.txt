@@ -1,0 +1,20 @@
+-----------------------------------------------------
+What to do with these Files?
+
+These Prefabs are what you will want to put into the NetworkManager Component in the PlayerPrefab Property.
+The NetworkManager Component ist part of the GameManagement GameObject in most Examples.
+------------------------------------------------------
+
+-----------------------------------------------------
+What's with the ComponentPrefabs Folder?
+
+The individual PlayerPrefabs are themselves build using even more Prefabs, that control the Representation, Input/Movement and Collision Properties of the Player (2D or 3D), as well as a simple 3D Text to be used as a Speechbubble.
+------------------------------------------------------
+
+-----------------------------------------------------
+Can I use my Own PlayerPrefab?
+
+Yes! You totally can! If you still want to make use of Networked Actions (see ActionBase.cs), you should still use the PlayerData Component on your own Prefab.
+You can also copy these Prefabs into a separate Folder, rename them, and change them to your liking.
+It is usually good practice to not change code or Assets in this Folder.
+You can also use individual components

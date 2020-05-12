@@ -125,7 +125,7 @@ public class AnimationScript3DBillboards : MonoBehaviour
         //We cannot be sure anymore, when everything is set up for us to load our image data
 
         //We use our STATE_INIT to check that our Image Data is not yet loaded
-        if (myAnimState != STATE_INIT && !myPlayer.isServer)
+        if (myAnimState != STATE_INIT && !myPlayer.isServerOnly)
         {
             //First, we need to figure out which Animation we should play
             //because things might have changed from the last frame
@@ -136,7 +136,7 @@ public class AnimationScript3DBillboards : MonoBehaviour
         }
 
         //we need to figure out if we are ready depending on PlayerData, which gets its info directly from the server
-        if (myPlayer.myState == PlayerData.ClientState.CS_HASDATA && myAnimState == STATE_INIT && !myPlayer.isServer)
+        if (myPlayer.myState == PlayerData.ClientState.CS_HASDATA && myAnimState == STATE_INIT && !myPlayer.isServerOnly)
         {
             GenerateTextureFromFile();
             myAnimState = STATE_IDLE_TOWARDS;
@@ -169,7 +169,7 @@ public class AnimationScript3DBillboards : MonoBehaviour
         bool bGuest = false;
 
         //load Data from the Resources Folder into a Texture (see http://hyperdramatik.net/mediawiki/index.php?title=GlossarCG#Textur )
-        Texture2D charImage = Resources.Load(characterFolderName + "/Characters/" + myPlayer.characterName + "_character") as Texture2D;
+        Texture charImage = Resources.Load(characterFolderName + "/Characters/" + myPlayer.characterName + "_character") as Texture2D;
 
         //Let's check if loading actually worked
         if (!charImage)
@@ -219,15 +219,17 @@ public class AnimationScript3DBillboards : MonoBehaviour
             idleAnim[i] = new Vector2(1.0f * 1.0f / (float)HowManyAnimationPicsperRow, i * 1.0f / (float)HowManyAnimationRows);
         }
 
+        //Getting to the materials of our renderer is actually not so easy...
+        Material rendererMat = GetComponent<Renderer>().material;
 
         //we now need to make sure that we do not draw the whole texture, but only a part of it.
         //so we need to set our Texture Scale accordingly
         //we do not care about flipping right now, we can do this later.
-        myMeshRenderer.material.mainTextureScale = new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
+        rendererMat.mainTextureScale = new Vector2(1.0f / (float)HowManyAnimationPicsperRow, 1.0f / (float)HowManyAnimationRows);
 
-        
         //we will now set our Material in the Meshrenderer to use our Texture
-        myMeshRenderer.material.mainTexture = charImage;
+        rendererMat.mainTexture = charImage;
+        //myMeshRenderer.material.mainTexture = charImage;
 
         //make color of our Sprite fancy if we are a guest, so all guests have different color
         if (bGuest)
@@ -236,10 +238,10 @@ public class AnimationScript3DBillboards : MonoBehaviour
             Color guestColor = new Color(0.25f + UnityEngine.Random.Range(0.0f, 0.75f), 0.25f + UnityEngine.Random.Range(0.0f, 0.75f), 0.25f + UnityEngine.Random.Range(0.0f, 0.75f), 1.0f);
 
             //then apply this color to our SpriteRenderer
-            myMeshRenderer.material.SetColor("_Color", guestColor);
+            rendererMat.SetColor("_Color", guestColor);
         }
 
-
+        
         //finally, set the info text
         //we do this here, to make sure that all Clients have their name set on all Computers!
         myPlayer.GetComponentInChildren<TMPro.TextMeshPro>().text = myPlayer.characterName;
@@ -252,10 +254,10 @@ public class AnimationScript3DBillboards : MonoBehaviour
     // but instead of having them appear as a box, let's give them a generic body
     // and at least some funky Color!
     //--------------------------------------
-    public Texture2D LoadGuestSprite()
+    public Texture LoadGuestSprite()
     {
         //First load our generic guest sprite
-        Texture2D guestSprite = Resources.Load(characterFolderName + "/Characters/guest_character") as Texture2D;
+        Texture guestSprite = Resources.Load(characterFolderName + "/Characters/guest_character") as Texture2D;
 
         return guestSprite;
     }
@@ -290,12 +292,12 @@ public class AnimationScript3DBillboards : MonoBehaviour
         playerFacing.Normalize();
 
         //do the same for the main camera
-        Vector3 cameraFacing = GameData.instance.mainCamera.transform.forward;
+        Vector3 cameraFacing = GameData.instance.cameraTripod.transform.forward;
         cameraFacing.y = 0;
         cameraFacing.Normalize();
 
         //and in order to determine if they are facing left or right from one another, we need to do the same for the right axis of the camera
-        Vector3 cameraRight = GameData.instance.mainCamera.transform.right;
+        Vector3 cameraRight = GameData.instance.cameraTripod.transform.right;
         cameraRight.y = 0;
         cameraRight.Normalize();
 

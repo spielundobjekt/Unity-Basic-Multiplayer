@@ -106,7 +106,6 @@ GameObject:
   - component: {fileID: 463736}
   - component: {fileID: 21234382}
   - component: {fileID: -7253491836989177383}
-  - component: {fileID: 3390750266877865694}
   m_Layer: 0
   m_Name: shelf_tile
   m_TagString: Untagged
@@ -205,15 +204,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
---- !u!114 &3390750266877865694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 196106}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: deaa1e580d9705747bc9185b85ec3d41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

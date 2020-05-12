@@ -12,8 +12,6 @@ GameObject:
   - component: {fileID: 4800396548274422975}
   - component: {fileID: 8695559491478563638}
   - component: {fileID: 6028047426950142417}
-  - component: {fileID: -1413149422819813009}
-  - component: {fileID: 1456341919618539582}
   m_Layer: 0
   m_Name: player_3DBillboards
   m_TagString: Player
@@ -90,34 +88,8 @@ MonoBehaviour:
   characterName: friedrich
   myState: 0
   currentAction: {fileID: 0}
---- !u!114 &-1413149422819813009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 129696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: deaa1e580d9705747bc9185b85ec3d41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bWalkable: 0
-  bInteractable: 1
-  tileAction: {fileID: 0}
---- !u!114 &1456341919618539582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 129696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0987e5081fe6e554589c52c75f359af5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  thingsAroundMe: []
+  talk: 
+  speechbubble: {fileID: 1634662428783674313}
 --- !u!1 &370592778477098875
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,6 +393,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 441900}
     m_Modifications:
+    - target: {fileID: 406230819150127593, guid: fce0f007922c8974c940a9b88edc561a,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 2.05
+      objectReference: {fileID: 0}
     - target: {fileID: 5055879072752879276, guid: fce0f007922c8974c940a9b88edc561a,
         type: 3}
       propertyPath: m_Name
@@ -481,6 +458,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9203262949583796573, guid: fce0f007922c8974c940a9b88edc561a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fce0f007922c8974c940a9b88edc561a, type: 3}
 --- !u!4 &5764374509226556045 stripped
@@ -489,3 +471,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1372546849517756960}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1634662428783674313 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 406230819150127593, guid: fce0f007922c8974c940a9b88edc561a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1372546849517756960}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -48,7 +48,7 @@ public class RepresentationSwitcher : MonoBehaviour
             case Representation.REP_2D:
                 //Also make sure that we update the main camera in the GameData Script
                 //so our other scripts that will do things with it do the right thing
-                GameData.instance.mainCamera = camera2D;
+                GameData.instance.cameraTripod = camera2D;
 
                 //Then switch the rooms on or off
                 room3DBillboards.SetActive(false);
@@ -58,7 +58,7 @@ public class RepresentationSwitcher : MonoBehaviour
             case Representation.REP_3D_BILLBOARDS:
                 //Also make sure that we update the main camera in the GameData Script
                 //so our other scripts that will do things with it do the right thing
-                GameData.instance.mainCamera = camera3DBillboards;
+                GameData.instance.cameraTripod = camera3DBillboards;
 
                 //Then switch the rooms on or off
                 room3DBillboards.SetActive(true);

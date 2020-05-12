@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 447398}
   - component: {fileID: 21208458}
   - component: {fileID: 7044954266517648369}
-  - component: {fileID: -994206162142035583}
   m_Layer: 0
-  m_Name: wall_tile
+  m_Name: wall_tile_2d
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,15 +108,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &-994206162142035583
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 158076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: deaa1e580d9705747bc9185b85ec3d41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

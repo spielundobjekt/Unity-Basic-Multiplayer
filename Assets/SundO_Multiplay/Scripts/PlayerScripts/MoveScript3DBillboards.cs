@@ -81,7 +81,7 @@ public class MoveScript3DBillboards : MoveScriptBase
 
 
         //first, let's do rotation left and right, using similar code to what we have with mouseLook
-        lookInput.y += lookSpeed * 0.1f * PlayerUIBridge.uiMov.x;
+        lookInput.y += lookSpeed * 0.1f * PlayerUIMovement.uiMov.x;
 
         Vector3 xyzAngleDegrees = new Vector3(0, 0, 0);
         //(we don't want to rotate around the z-Axis!)
@@ -93,7 +93,7 @@ public class MoveScript3DBillboards : MoveScriptBase
         myPlayer.lookRotation = Quaternion.Euler(xyzAngleDegrees);
 
         // then, let's do forward and backward, also similar to what we do in the keyboard movement:
-        currentMovement = new Vector3(0.0f, 0.0f, moveSpeed * PlayerUIBridge.uiMov.z);
+        currentMovement = new Vector3(0.0f, 0.0f, moveSpeed * PlayerUIMovement.uiMov.z);
 
         //remember that the actual movement of the player will be handled after this function
         //so we are pretty much done now.

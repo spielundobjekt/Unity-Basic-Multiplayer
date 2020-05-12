@@ -42,14 +42,14 @@ public class PlayerCameraMovement3D : MonoBehaviour
 
         //In 3D, we want to rotate the camera according to where the player is looking
         //so first we need to get the player transform from our PlayerData Script, and then align the Camera transform with that.
-        GameData.instance.mainCamera.transform.position = myPlayer.transform.position;
+        GameData.instance.cameraTripod.transform.position = myPlayer.transform.position;
 
         //but! We want to look out of the eyes, and myPlayer.transform.position gives us the location of the players tummy.
         //so we need to offset the camera a bit, to make it seem like we are at eye level
-        GameData.instance.mainCamera.transform.position += new Vector3(0, eyeOffset, 0);
+        GameData.instance.cameraTripod.transform.position += new Vector3(0, eyeOffset, 0);
 
         //Then: use our player's lookRotation to rotate the camera
         //We don't use our player's actual rotaton, because the "body" of our player should always stay upright
-        GameData.instance.mainCamera.transform.rotation = myPlayer.lookRotation;
+        GameData.instance.cameraTripod.transform.rotation = myPlayer.lookRotation;
     }
 }

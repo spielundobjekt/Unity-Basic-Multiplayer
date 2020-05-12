@@ -14,28 +14,39 @@ public class PlayerData : Mirror.NetworkBehaviour
     public static PlayerData localPlayer;   //here we store our local client player, because we will need it to access it
                                             //every once in a while, if we want to do things to objects
 
+    //these next two variables shouldn't show up in the inspector, 
+    //but they still need to be public, so other scripts can access them
+    //which is why we use the [HideInInspector] Editor Attribute
+    [HideInInspector]
     public Vector3 movementDirection;       //here, we will store the Vector this player is moving in
+
+    [HideInInspector]
     public Quaternion lookRotation;         //here we store the Rotation of the Player's gaze
 
+    [Tooltip("Our Character's name. This should be Set through UI")]
     [Mirror.SyncVar]                        //we use this to synchronize variables across server and clients
     public string characterName;            //this is the name of our character Sprite 
 
-    Surroundings mySurroundings;            //helper Object to check for things around us, 
-                                            //will be used later
-
     public enum ClientState {CS_INIT, CS_HASDATA};
 
+    [Tooltip("The current State this client is in - is public for observation purposes.")]
     [Mirror.SyncVar]
     public ClientState myState = ClientState.CS_INIT;
 
-    public ActionBase currentAction;            //if we want to perform an Action in the world
+    [Tooltip("The current Action Component (from ActionBase.cs) that is being performed.")]
+    public ActionBase currentAction;        //if we want to perform an Action in the world
                                             //(as in: interacting with objects, that others can see)
                                             //this will be the action we are currently performing
 
+    [Tooltip("The string that gets synchronized across the network if someone called the Say() function (see UI-Chatbox).")]
     [Mirror.SyncVar]
     public string talk;                     //the string we use to show what we are talking about
 
-    public TMPro.TextMeshProUGUI speechbubble;  //a connection to the speechbubble
+
+    [Tooltip("A Reference to a Text Element (UI or 3DText) to display Speech in.")]
+    public TMPro.TMP_Text speechbubble; //a connection to the speechbubble - 
+                                        //because we reference an Object of the TextMeshPro Base Class - TMP_Text - we don't care if it is an UGUI or 3D Mesh Text
+    
 
 
     //public bool bReadyToLoadSprites = false;
@@ -45,9 +56,6 @@ public class PlayerData : Mirror.NetworkBehaviour
     private void Awake()
     {
         Debug.Log("I am alive!");
-
-        //connect to the script that does the check for the surroundings
-        mySurroundings = GetComponent<Surroundings>();
 
         //Let's let the GameData Script know that we exist!
         GameData.instance.players.Add(this);
@@ -99,9 +107,19 @@ public class PlayerData : Mirror.NetworkBehaviour
         //First, get Authority over the GameObject, so we can do things with it
         //For that, we need to get its NetworkIdentity Component
         Mirror.NetworkIdentity actionIdentity = myAction.GetComponent<Mirror.NetworkIdentity>();
-        
-        //then, we tell the server that we would like to get authority over it
-        CmdGetAuthority(actionIdentity);
+
+        //if we want the action to work for all clients
+        if (myAction.bReplicateOnClients)
+        {
+            //then, we tell the server that we would like to get authority over it
+            CmdGetAuthority(actionIdentity);
+            //this will in turn call the StartOnAuthority() on this Action automatically!
+        }
+        else
+        {
+            //if we don't want o replicate this action on other clients, just call 
+            myAction.PerformAction();
+        }
 
     }
 
@@ -122,7 +140,10 @@ public class PlayerData : Mirror.NetworkBehaviour
     [Mirror.ClientRpc]
     public void RpcShowTalk(string myTalk)
     {
-        speechbubble.text = myTalk;
+        if (speechbubble)
+        {
+            speechbubble.text = myTalk;
+        }
     }
 
 

@@ -12,7 +12,7 @@ public class AnimationScript3DAnimatedMesh : MonoBehaviour
 {
     
     PlayerData myPlayer;                        //we assume this one is in our Parent GameObject
-    Animator myAnimator;  //We assume this one is in a child GameObject
+    Animator myAnimator;                        //We assume this one is in a child GameObject
 
 
     //we also introduce a way of smoothing out variable values over time here.
@@ -31,8 +31,10 @@ public class AnimationScript3DAnimatedMesh : MonoBehaviour
     List<float> valueBuffer;
     
     //we can decide over how many frames we want to average a value
-    public int howManyValuesOverTime = 4;     //this is equivalent to the number of frame we wait for data to accumulate 
+    int howManyValuesOverTime = 4;     //this is equivalent to the number of frame we wait for data to accumulate 
 
+    [Tooltip("Drop your FBX in here.")]
+    public GameObject skinnedMeshPrefab;      //drop your skinned Mesh FBX in here!  
 
     //--------------------------------------
     //Make connections to all important things we need to read data from, and write data to
@@ -41,6 +43,9 @@ public class AnimationScript3DAnimatedMesh : MonoBehaviour
 
     private void Start()
     {
+        //instantiate the selected skinned Mesh Prefab as a Child of this GameObject
+        skinnedMeshPrefab = Instantiate(skinnedMeshPrefab, this.transform);
+
         //initialize our variables with which we get access to other scripts that are important to us
         myPlayer = GetComponentInParent<PlayerData>();      //we will need some variables from PlayerData, namely movementDirection
         myAnimator = GetComponentInChildren<Animator>();    //this is new - it's a Unity Component that takes care of animation for us
@@ -49,6 +54,9 @@ public class AnimationScript3DAnimatedMesh : MonoBehaviour
         //and not the one that maybe came with the Asset, we will load our own
         //from the resources folder
         myAnimator.runtimeAnimatorController = Resources.Load("SundO_Multiplay/AnimationControllers/HumanoidMovement") as RuntimeAnimatorController; ;
+
+        //also, make sure we do not Apply Root Motion, otherwise our Character will most likely walk away from us
+        myAnimator.applyRootMotion = false;
 
         //now we need to set up some things for the averaging of values over time
 
@@ -65,6 +73,10 @@ public class AnimationScript3DAnimatedMesh : MonoBehaviour
         {
             valueBuffer.Add(0.0f);
         }
+
+        
+
+
     }
 
 

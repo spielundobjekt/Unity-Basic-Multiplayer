@@ -43,7 +43,7 @@ public class MoveScript2D : MoveScriptBase
     public override void ProcessUIInput()
     {
         //we know that PlayerUIBridge.uiMov has the values we need for UI-Interface Movement
-        currentMovement = moveSpeed * PlayerUIBridge.uiMov;
+        currentMovement = moveSpeed * PlayerUIMovement.uiMov;
     }
 
     //--------------------------------------

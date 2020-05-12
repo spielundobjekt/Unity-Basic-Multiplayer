@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 454784}
   - component: {fileID: 21201178}
   - component: {fileID: 5726562780493369995}
-  - component: {fileID: -1051665628833106774}
   m_Layer: 0
-  m_Name: fire_tile
+  m_Name: fire_tile_2d
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,15 +108,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.56, y: 2.56}
   m_EdgeRadius: 0
---- !u!114 &-1051665628833106774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 160674}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: deaa1e580d9705747bc9185b85ec3d41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
