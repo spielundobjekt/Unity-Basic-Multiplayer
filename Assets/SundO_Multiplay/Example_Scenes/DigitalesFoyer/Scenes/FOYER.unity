@@ -32271,7 +32271,7 @@ PrefabInstance:
     - target: {fileID: 7766437755408498191, guid: d59cd381736bd1e4d93ce6eca5139558,
         type: 3}
       propertyPath: bStartEditorAsHost
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7766437755408498191, guid: d59cd381736bd1e4d93ce6eca5139558,
         type: 3}
