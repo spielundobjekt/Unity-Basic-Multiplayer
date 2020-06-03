@@ -103,7 +103,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6697811442954246317}
   - component: {fileID: 3294345836424675383}
-  - component: {fileID: 7668755168603729826}
   - component: {fileID: 1071866487994516394}
   - component: {fileID: -8538672736195615068}
   - component: {fileID: -8070949637359398358}
@@ -145,24 +144,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eyeOffset: 0.25
---- !u!114 &7668755168603729826
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5055879072752879276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3101ca62fafc1324992f957a3c5186d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myPlayer: {fileID: 0}
-  moveSpeed: 1
-  currentMovement: {x: 0, y: 0, z: 0}
-  oldLocation: {x: 0, y: 0, z: 0}
-  lookSpeed: 3
-  lookInput: {x: 0, y: 0}
 --- !u!114 &1071866487994516394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,7 +197,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f83e64766c9bd74690358c714e597ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  howManyValuesOverTime: 4
   skinnedMeshPrefab: {fileID: -927199367670048503, guid: 9bda2793d6cdc5c4d85dde2450511b0d,
     type: 3}
 --- !u!114 &8973299463510818148
@@ -232,7 +212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myPlayer: {fileID: 0}
-  moveSpeed: 1
+  moveSpeed: 1.1
   currentMovement: {x: 0, y: 0, z: 0}
   oldLocation: {x: 0, y: 0, z: 0}
   navMeshTarget: {fileID: 7865069265651422998}

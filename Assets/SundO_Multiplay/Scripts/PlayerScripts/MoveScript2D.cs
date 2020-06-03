@@ -17,7 +17,7 @@ public class MoveScript2D : MoveScriptBase
     public override bool CheckForDeviceInput()
     {
         // Movement per input direction - Keyboard or Gamepad
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0 /* we add keys that we want to configure here: */ || Input.GetKeyDown(KeyCode.Space))
         {
             return true;
         }
@@ -33,6 +33,14 @@ public class MoveScript2D : MoveScriptBase
     //--------------------------------------
     public override void ProcessDeviceInput()
     {
+        //this is code for jumping using unity's physics system
+        //and presuming you have placed rigidbody and collider on the main Player Object
+        /*
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            GetComponentInParent<Rigidbody>().AddForce(new Vector3(0, 4, 0), ForceMode.Impulse);
+        }
+        */
         currentMovement = new Vector3( moveSpeed * Input.GetAxis("Horizontal"), 0.0f, moveSpeed * Input.GetAxis("Vertical"));
     }
 

@@ -42,12 +42,14 @@ public class MoveScript3DAnimatedMesh : MoveScriptBase
         //Remember, we are not creating a component in the PlayerData Script, 
         //but in the Gameobject that holds the Playerdatascript!
         myNavMeshAgent = myPlayer.gameObject.AddComponent<NavMeshAgent>();
-        
+
         //now that we have created a new NavMeshAgent, we should set up some values, 
         //to make it work better in our context
+        //these values are set up for our specific mesh, and should be exposed to the Editor at some point!
         //Remember: we have created this Component in the same GameObject that PlayerData is in!
+        //myNavMeshAgent.baseOffset = -0.0875f;
         myNavMeshAgent.angularSpeed = agentAngularSpeed;
-        myNavMeshAgent.speed = moveSpeed;
+        myNavMeshAgent.speed = moveSpeed * 20;  //this needs to be higher, so the NavMeshAgent has the capacity to go full speed of our moveScript
 
     }
 

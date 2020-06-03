@@ -11,7 +11,7 @@ using System.IO;
 ///that we can draw depending on how we move
 ///so we ourselces and others can see a representation of us in 2D
 ///
-// We presume this script is a Child of the GameObject that holds the PlayerData Script
+/// We presume this script is a Child of the GameObject that holds the PlayerData Script
 /// </summary>
 
 public class AnimationScript2D : MonoBehaviour
