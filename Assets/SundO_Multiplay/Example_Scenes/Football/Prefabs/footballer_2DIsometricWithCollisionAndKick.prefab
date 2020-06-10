@@ -13,9 +13,11 @@ GameObject:
   - component: {fileID: 8695559491478563638}
   - component: {fileID: 6028047426950142417}
   - component: {fileID: 2493380998533492606}
-  - component: {fileID: 4354402627137811255}
+  - component: {fileID: 5123680815900191108}
+  - component: {fileID: 3518337564616778719}
+  - component: {fileID: 2747800322032774887}
   m_Layer: 0
-  m_Name: player_2DIsometricWithCollision
+  m_Name: footballer_2DIsometricWithCollisionAndKick
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108,7 +110,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!65 &4354402627137811255
+--- !u!114 &5123680815900191108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74d1450e5788d79469091d8eeca3b3f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseKickStrength: 25
+  baseKickLift: 0.05
+  kickMultiplier: 50
+--- !u!65 &3518337564616778719
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,7 +136,20 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 2, z: 1}
+  m_Size: {x: 0.25, y: 2, z: 1}
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!65 &2747800322032774887
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129696}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 2, z: 0.25}
   m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &370592778477098875
 GameObject:
@@ -424,6 +454,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 441900}
     m_Modifications:
+    - target: {fileID: 3892255258558237117, guid: e1557fc719ff4234d98222fde7ddf38b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.45
+      objectReference: {fileID: 0}
     - target: {fileID: 5799062691120547303, guid: e1557fc719ff4234d98222fde7ddf38b,
         type: 3}
       propertyPath: m_LocalPosition.x

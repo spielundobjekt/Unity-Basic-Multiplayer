@@ -20,7 +20,13 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 1
+  - enabled: 0
     path: Assets/SundO_Multiplay/Example_Scenes/DigitalesFoyer/Scenes/FOYER.unity
     guid: 3d748cbc009798a44bea754955e96cfc
+  - enabled: 0
+    path: Assets/SundO_Multiplay/Example_Scenes/SimpleExamples/NetworkedRigidbody.unity
+    guid: 512b448f14e5c8448ae015f70ee5dd8a
+  - enabled: 1
+    path: Assets/SundO_Multiplay/Example_Scenes/Football/hallenfussball.unity
+    guid: c4548cbed475ba141b4843addc7f70dc
   m_configObjects: {}

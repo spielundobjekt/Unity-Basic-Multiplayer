@@ -42,7 +42,8 @@ public class TriggerScript : MonoBehaviour
         Debug.Log("Entered Trigger: "+other.gameObject.name);
 
         //let's execute the action on the computer of the person that entered the Collider!
-        if (other.gameObject.GetComponent<Mirror.NetworkIdentity>().isLocalPlayer)
+        //but also check if it is a Person that we collided with in the first place!
+        if (other.gameObject.GetComponent<Mirror.NetworkIdentity>() && other.gameObject.GetComponent<Mirror.NetworkIdentity>().isLocalPlayer)
         {
             //let's make sure there is an Action set up!
             if (actionOnTriggerEnter)
@@ -61,9 +62,9 @@ public class TriggerScript : MonoBehaviour
     {
         //tell us, firend, who left?
         Debug.Log("Exited Trigger: "+other.gameObject.name);
-
         //let's execute the action on the computer of the person that exited the Collider!
-        if (other.gameObject.GetComponent<Mirror.NetworkIdentity>().isLocalPlayer)
+        //but also check if it is a Person that we collided with in the first place!
+        if (other.gameObject.GetComponent<Mirror.NetworkIdentity>() && other.gameObject.GetComponent<Mirror.NetworkIdentity>().isLocalPlayer)
         {
             if (actionOnTriggerExit)
             {
@@ -89,7 +90,8 @@ public class TriggerScript : MonoBehaviour
         Debug.Log("Entered Collision: "+collision.gameObject.name);
 
         //let's execute the action on the computer of the person that started touching the Collider!
-        if (collision.gameObject.GetComponent<Mirror.NetworkIdentity>().isLocalPlayer)
+        //but also check if it is a Person that we collided with in the first place!
+        if (collision.gameObject.GetComponent<Mirror.NetworkIdentity>() && collision.gameObject.GetComponent<Mirror.NetworkIdentity>().isLocalPlayer)
         {
             if (actionOnCollisionEnter)
             {
@@ -108,7 +110,8 @@ public class TriggerScript : MonoBehaviour
         Debug.Log("Exited Collision: "+collision.gameObject.name);
 
         //let's execute the action on the computer of the person that stopped touching the Collider!
-        if (collision.gameObject.GetComponent<Mirror.NetworkIdentity>().isLocalPlayer)
+        //but also check if it is a Person that we collided with in the first place!
+        if (collision.gameObject.GetComponent<Mirror.NetworkIdentity>() && collision.gameObject.GetComponent<Mirror.NetworkIdentity>().isLocalPlayer)
         {
             if (actionOnCollisionExit)
             {
