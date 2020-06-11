@@ -85,35 +85,15 @@ public class NetworkedFootball : Mirror.NetworkBehaviour
     {
         //base.OnStopServer();
         Debug.Log("This is called on the Server, when this football is being Despawned...");
-        GameObject myNewFootball = Instantiate(this.gameObject);
+        GameObject myNewFootball = Instantiate(Mirror.NetworkManager.singleton.spawnPrefabs[0]);
         Rigidbody newRigidbody = myNewFootball.GetComponent<Rigidbody>();
         newRigidbody.velocity = myRigidbody.velocity;
         newRigidbody.rotation = myRigidbody.rotation;
         newRigidbody.position = myRigidbody.position;
         newRigidbody.angularVelocity = myRigidbody.angularVelocity;
         Mirror.NetworkServer.Spawn(myNewFootball);
-        /*
-        if (hasAuthority)
-        {
-            //Spawn a new football on the server, as this one will be removed with the client
-            CmdSpawnNewFootball();
-            Debug.Log("on the one that has Authority over our football!");    
-        }
-       */
+        
     }
 
-    [Mirror.Command]
-    public void CmdSpawnNewFootball()
-    {
-        GetComponent<Mirror.NetworkIdentity>().RemoveClientAuthority();
-        Debug.Log("This is called on the Server, after the Client has stopped!");
-        Mirror.NetworkServer.Spawn(this.gameObject);
-        /*
-        myRigidbody.velocity = rbVel;
-        myRigidbody.rotation = rbRot;
-        myRigidbody.position = rbPos;
-        myRigidbody.angularVelocity = rbAngVel;
-        */
-    }
 
 }

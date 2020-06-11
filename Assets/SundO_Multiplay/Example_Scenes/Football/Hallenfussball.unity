@@ -1817,7 +1817,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showGUI: 1
+  showGUI: 0
   offsetX: 0
   offsetY: 0
 --- !u!114 &803567194
@@ -1895,7 +1895,7 @@ MonoBehaviour:
   OnServerDisconnected:
     m_PersistentCalls:
       m_Calls: []
-  port: 7778
+  port: 80
   Secure: 0
   CertificatePath: 
   CertificatePassword: 
@@ -4059,7 +4059,7 @@ PrefabInstance:
     - target: {fileID: 7766437755408498191, guid: d59cd381736bd1e4d93ce6eca5139558,
         type: 3}
       propertyPath: bDirectConnectToServer
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7766437755408498191, guid: d59cd381736bd1e4d93ce6eca5139558,
         type: 3}
