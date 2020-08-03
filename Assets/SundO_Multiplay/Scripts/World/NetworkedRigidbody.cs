@@ -15,6 +15,13 @@ using UnityEngine;
 
 public class NetworkedRigidbody : Mirror.NetworkBehaviour
 {
+    //this shows up in the Unity Editor and can be used to describe Editor instructions
+    [
+        Header("DO NOT USE THIS COMPONENT, ", order = 0), Space(-10, order = 1),
+        Header("Please use the one from the Mirror library.", order = 2), Space(-10, order = 3),
+        Header("It has a little blue square next to it in the add-component menu.", order = 4), Space(15, order = 5),
+    ]
+
 
     private Rigidbody myRigidbody;      //a Reference to the Rigidbody Component within this GameObject
 

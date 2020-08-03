@@ -1790,7 +1790,7 @@ MonoBehaviour:
   cameraTripod: {fileID: 131478148}
   players: []
   netManager: {fileID: 0}
-  bShowGUIOnConnect: 1
+  bShowGUIOnConnect: 0
 --- !u!4 &803567192
 Transform:
   m_ObjectHideFlags: 0

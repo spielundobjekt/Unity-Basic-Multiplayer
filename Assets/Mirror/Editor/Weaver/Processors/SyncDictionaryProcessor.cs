@@ -1,8 +1,10 @@
-// this class generates OnSerialize/OnDeserialize for SyncLists
 using Mono.CecilX;
 
 namespace Mirror.Weaver
 {
+    /// <summary>
+    /// generates OnSerialize/OnDeserialize for SyncLists
+    /// </summary>
     static class SyncDictionaryProcessor
     {
         /// <summary>
@@ -19,7 +21,7 @@ namespace Mirror.Weaver
             }
             else
             {
-                Weaver.Error($"Could not find generic arguments for {Weaver.SyncDictionaryType} using {td}");
+                Weaver.Error($"Could not find generic arguments for SyncDictionary in {td.Name}", td);
                 return;
             }
 
@@ -29,7 +31,7 @@ namespace Mirror.Weaver
             }
             else
             {
-                Weaver.Error($"Could not find generic arguments for {Weaver.SyncDictionaryType} using {td}");
+                Weaver.Error($"Could not find generic arguments for SyncDictionary in {td.Name}", td);
             }
         }
     }

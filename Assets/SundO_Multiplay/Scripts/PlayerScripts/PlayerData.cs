@@ -46,8 +46,9 @@ public class PlayerData : Mirror.NetworkBehaviour
     [Tooltip("A Reference to a Text Element (UI or 3DText) to display Speech in.")]
     public TMPro.TMP_Text speechbubble; //a connection to the speechbubble - 
                                         //because we reference an Object of the TextMeshPro Base Class - TMP_Text - we don't care if it is an UGUI or 3D Mesh Text
-    
 
+    [Tooltip("If you want this character to be controlled by code and not by a player, check this!")]
+    public bool bNPC;                   //controls the character via script instead of player input.
 
     //public bool bReadyToLoadSprites = false;
 
@@ -55,15 +56,17 @@ public class PlayerData : Mirror.NetworkBehaviour
     //But here's the thing: our networking doesn't work in the Awake Function yet.
     private void Awake()
     {
-        Debug.Log("I am alive!");
-
-        //Let's let the GameData Script know that we exist!
-        GameData.instance.players.Add(this);
+       
     }
 
     //All Networking stuff needs to be called in Start (and all functions onwards)
     private void Start()
     {
+        Debug.Log("I am alive!");
+
+        //Let's let the GameData Script know that we exist!
+        GameData.instance.players.Add(this);
+
         //here we have to distribute our name to all other clients
         //first, only do this for the local Player, because they have access to the name the Player was given by the User
         if (isLocalPlayer)
@@ -80,7 +83,11 @@ public class PlayerData : Mirror.NetworkBehaviour
             myState = ClientState.CS_HASDATA;            
         }
         
-
+        //if we are not controlled by a player, we should load our representation on all clients
+        if (bNPC)
+        {
+            myState = ClientState.CS_HASDATA;
+        }
     }
     
     

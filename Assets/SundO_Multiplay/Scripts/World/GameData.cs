@@ -59,6 +59,7 @@ public class GameData : MonoBehaviour
     {
         instance = this;
         netManager = GetComponent<Mirror.NetworkManager>();
+        players = new List<PlayerData>();
     }
 
     public void StartHostAndClient()

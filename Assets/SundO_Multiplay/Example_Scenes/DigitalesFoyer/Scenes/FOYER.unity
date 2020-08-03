@@ -3032,11 +3032,20 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'ALL TOGETHER NOW
+  m_text: 'BE: B.E.R.N.D.
 
 
-    Presentation of the 1st year Research Projects
-    - MA Spiel und Objekt
+    A collaborative game about reacting to a climate
+    emergency.
+
+    
+
+    By Anton Krause, Fabian Raith, Lena Eikenbusch, Julian
+    Jungel and Janne Nora Kummer
+
+    
+
+    created for AMAZE 2019
 
 '
   m_isRightToLeft: 0
@@ -3107,12 +3116,12 @@ MonoBehaviour:
   m_margin: {x: 0.7721281, y: 0, z: 14.807946, w: 1.271279}
   m_textInfo:
     textComponent: {fileID: 163473465}
-    characterCount: 87
+    characterCount: 189
     spriteCount: 0
-    spaceCount: 16
-    wordCount: 15
+    spaceCount: 31
+    wordCount: 32
     linkCount: 0
-    lineCount: 4
+    lineCount: 10
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -20010,11 +20019,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1950661771218268652, guid: 815cc122610701849bb9b9beb9339a85,
+        type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 8400000, guid: 97f8271815ce1fd41b55a6475b42f63c, type: 2}
     - target: {fileID: 1950661771417193101, guid: 815cc122610701849bb9b9beb9339a85,
         type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 1443762050}
+    - target: {fileID: 4818136358309789169, guid: 815cc122610701849bb9b9beb9339a85,
+        type: 3}
+      propertyPath: m_Texture
+      value: 
+      objectReference: {fileID: 8400000, guid: 97f8271815ce1fd41b55a6475b42f63c, type: 2}
     - target: {fileID: 4818136358321660912, guid: 815cc122610701849bb9b9beb9339a85,
         type: 3}
       propertyPath: m_LocalPosition.z
@@ -20076,6 +20095,11 @@ PrefabInstance:
         type: 3}
       propertyPath: sceneId
       value: 4280906835
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673750695335256079, guid: 815cc122610701849bb9b9beb9339a85,
+        type: 3}
+      propertyPath: filename
+      value: BeBernd.mp4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 815cc122610701849bb9b9beb9339a85, type: 3}

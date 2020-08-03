@@ -12,13 +12,17 @@ namespace Mirror.Weaver
     {
         public static MethodReference ResolveMethod(TypeReference tr, AssemblyDefinition scriptDef, string name)
         {
-            //Console.WriteLine("ResolveMethod " + t.ToString () + " " + name);
             if (tr == null)
             {
-                Weaver.Error("Type missing for " + name);
+                Weaver.Error($"Cannot resolve method {name} without a class");
                 return null;
             }
-            return ResolveMethod(tr, scriptDef, method => method.Name == name);
+            MethodReference method = ResolveMethod(tr, scriptDef, m => m.Name == name);
+            if (method == null)
+            {
+                Weaver.Error($"Method not found with name {name} in type {tr.Name}", tr);
+            }
+            return method;
         }
 
         public static MethodReference ResolveMethod(TypeReference t, AssemblyDefinition scriptDef, System.Func<MethodDefinition, bool> predicate)
@@ -31,15 +35,14 @@ namespace Mirror.Weaver
                 }
             }
 
-            Weaver.Error($"Method not found");
+            Weaver.Error($"Method not found in type {t.Name}", t);
             return null;
         }
 
-        public static MethodReference ResolveMethodInParents(TypeReference tr, AssemblyDefinition scriptDef, string name)
+        public static MethodReference TryResolveMethodInParents(TypeReference tr, AssemblyDefinition scriptDef, string name)
         {
             if (tr == null)
             {
-                Weaver.Error("Type missing for " + name);
                 return null;
             }
             foreach (MethodDefinition methodRef in tr.Resolve().Methods)
@@ -49,8 +52,9 @@ namespace Mirror.Weaver
                     return scriptDef.MainModule.ImportReference(methodRef);
                 }
             }
+
             // Could not find the method in this class,  try the parent
-            return ResolveMethodInParents(tr.Resolve().BaseType, scriptDef, name);
+            return TryResolveMethodInParents(tr.Resolve().BaseType, scriptDef, name);
         }
 
         // System.Byte[] arguments need a version with a string
@@ -100,7 +104,7 @@ namespace Mirror.Weaver
                 }
             }
 
-            Weaver.Error($"{t}.{name}<{genericType}>() not found");
+            Weaver.Error($"Method {name} not found in {t.Name}", t);
             return null;
         }
 

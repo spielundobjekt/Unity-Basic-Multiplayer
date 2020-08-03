@@ -24,9 +24,18 @@ EditorBuildSettings:
     path: Assets/SundO_Multiplay/Example_Scenes/DigitalesFoyer/Scenes/FOYER.unity
     guid: 3d748cbc009798a44bea754955e96cfc
   - enabled: 0
-    path: Assets/SundO_Multiplay/Example_Scenes/SimpleExamples/NetworkedRigidbody.unity
+    path: Assets/SundO_Multiplay/Example_Scenes/SimpleExamples/OLD_NetworkedRigidbody.unity
     guid: 512b448f14e5c8448ae015f70ee5dd8a
-  - enabled: 1
-    path: Assets/SundO_Multiplay/Example_Scenes/Football/hallenfussball.unity
+  - enabled: 0
+    path: Assets/SundO_Multiplay/Example_Scenes/Football/Hallenfussball.unity
     guid: c4548cbed475ba141b4843addc7f70dc
+  - enabled: 0
+    path: Assets/ExperimentalProjects/ArsFoto.unity
+    guid: 9f06053b80624114a9e5df40704116e5
+  - enabled: 0
+    path: Assets/ExperimentalProjects/Rigidbody Test.unity
+    guid: 46233b5773e093048abb24ad79a9bff1
+  - enabled: 1
+    path: Assets/SundO_Multiplay/Example_Scenes/SimpleExamples/NetworkedRigidbody.unity
+    guid: 5ba9a41d85f7b294eb895275aead74f6
   m_configObjects: {}

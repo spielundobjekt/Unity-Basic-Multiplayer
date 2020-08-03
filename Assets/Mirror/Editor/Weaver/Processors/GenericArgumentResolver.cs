@@ -21,7 +21,7 @@ namespace Mirror.Weaver
                 TypeReference arg = parent.GenericArguments[genericArgument];
                 if (arg.IsGenericParameter)
                 {
-                    itemType = FindParameterInStack(genericArgument);
+                    itemType = FindParameterInStack(td, genericArgument);
                 }
                 else
                 {
@@ -32,7 +32,7 @@ namespace Mirror.Weaver
             return itemType != null;
         }
 
-        TypeReference FindParameterInStack(int genericArgument)
+        TypeReference FindParameterInStack(TypeDefinition td, int genericArgument)
         {
             while (stack.Count > 0)
             {
@@ -54,14 +54,14 @@ namespace Mirror.Weaver
                 {
                     // if greater than `genericArgument` it is hard to know which generic arg we want
                     // See SyncListGenericInheritanceWithMultipleGeneric test
-                    Weaver.Error($"Too many generic argument for {next}");
+                    Weaver.Error($"Type {td.Name} has too many generic arguments in base class {next}", td);
                     return null;
                 }
 
                 TypeReference genericArg = genericType.GenericArguments[genericArgument];
                 if (!genericArg.IsGenericParameter)
                 {
-                    // if not generic, sucessfully found type
+                    // if not generic, successfully found type
                     return Weaver.CurrentAssembly.MainModule.ImportReference(genericArg);
                 }
             }

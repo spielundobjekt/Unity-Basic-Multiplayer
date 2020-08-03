@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 8606037246979548221}
   - component: {fileID: 4896237912800830546}
   - component: {fileID: 4138499016500241201}
-  - component: {fileID: 1232038609428798291}
+  - component: {fileID: 5058514183036245818}
   m_Layer: 0
-  m_Name: amplifier
+  m_Name: NetworkedRigidbody-Amplifier
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -129,7 +129,8 @@ MonoBehaviour:
   sceneId: 0
   serverOnly: 0
   m_AssetId: 
---- !u!114 &1232038609428798291
+  hasSpawned: 0
+--- !u!114 &5058514183036245818
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -138,8 +139,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 6178822853872692196}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb139d97a292c0a4ba04e25e02084744, type: 3}
+  m_Script: {fileID: 11500000, guid: 83392ae5c1b731446909f252fd494ae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  target: {fileID: 4896237912800830546}
+  clientAuthority: 0
+  syncVelocity: 1
+  clearVelocity: 0
+  velocitySensitivity: 0.1
+  syncAngularVelocity: 1
+  clearAngularVelocity: 0
+  angularVelocitySensitivity: 0.1
